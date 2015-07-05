@@ -110,12 +110,6 @@ public class MobileDao {
 		return list3;
 		
 	}
-	
-	
-	
-	
-	
-	
 	public List<MobileTitleSave>getSavedMobileTitle() throws DbException {
 		listMobileTitleSaves = dbUtils.findAll(MobileTitleSave.class);
 		return listMobileTitleSaves;

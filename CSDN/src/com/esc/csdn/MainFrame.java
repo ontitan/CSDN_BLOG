@@ -44,24 +44,19 @@ import com.esc.csdn.utils.ScreenShot;
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener,SensorEventListener,OnTouchListener{
+public class MainFrame extends FragmentActivity implements View.OnClickListener,SensorEventListener,OnTouchListener{
 
 	private String[] mMenu_name;
 
 	private ResideMenu mResideMenu;
 
 	private ResideMenuItem mMenu_cloud;
-
 	private ResideMenuItem mMenu_mobile;
-
 	private ResideMenuItem mMenu_industry;
-
 	private ResideMenuItem mMenu_magzine;
-
 	private ResideMenuItem mMenu_save;
 	private ResideMenuItem mMenu_blog;
 	private ResideMenuItem mMenu_exit;
-
 	private ResideMenuItem mMenu_settings;
 	private SensorManager sensorManager = null;
 	private Vibrator vibrator = null;
@@ -69,77 +64,30 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 	private String isChecked = "";
 	
 	private int exitInt = 1;
-	FrameLayout frameLayout = null;
+	private FrameLayout mFrameLayout = null;
+	private ImageView mShareBtn=null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-//		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.main);
-		frameLayout = (FrameLayout) findViewById(R.id.dialogfram);
-		(((ViewGroup) findViewById(android.R.id.content)).getChildAt(0)).setBackgroundColor(Color.parseColor("#ff121111"));
+		setContentView(R.layout.mainframe);
+		mShareBtn =  (ImageView) findViewById(R.id.action_bar_id).findViewById(R.id.share_image);
 		setupMenu();
-		cache = ACache.get(MainActivity.this);
-		boolean isConn =  NetUtil.checkNet(MainActivity.this);
+		cache = ACache.get(MainFrame.this);
+		boolean isConn =  NetUtil.checkNet(MainFrame.this);
 		if (isConn) {
-			//			Log.i("ht","has conn========");
+			 Toast.makeText(MainFrame.this, "net is open!", Toast.LENGTH_LONG).show();
 		}else{
-			//			Log.i("ht","no conn========");
-			FrameLayout frameLayout = (FrameLayout) findViewById(R.id.dialogfram);
-			frameLayout.setOnTouchListener(new OnTouchListener() {
-				
-				@Override
-				public boolean onTouch(View arg0, MotionEvent arg1) {
-					// TODO Auto-generated method stub
-					return true;
-				}
-			});
-			frameLayout.setVisibility(View.VISIBLE);
-			TextView textOk =  (TextView) findViewById(R.id.dialogfram).findViewById(R.id.ok);
-			TextView textCancel = (TextView) findViewById(R.id.dialogfram).findViewById(R.id.cancle);
-			textOk.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View arg0) {
-					//					Log.d("html","====textOk=====");
-
-					Intent intent =  new Intent(Settings.ACTION_SETTINGS);  
-					startActivity(intent);
-					findViewById(R.id.dialogfram).setVisibility(View.GONE);
-				}
-			});
-			textCancel.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View arg0) {
-					//					Log.d("html","====textCancel=====");
-					findViewById(R.id.dialogfram).setVisibility(View.GONE);
-				}
-			});
-
+			Toast.makeText(MainFrame.this, "net is close!", Toast.LENGTH_LONG).show();
 		}
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		vibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
-		changeFragment(new CloudFragment());
-		
-		
-		//
-		ImageView imageShare =  (ImageView) findViewById(R.id.action_bar_id).findViewById(R.id.share_image);
-		imageShare.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				
-			}
-		});
-		
-		
-		
+		changeFragment(new SettingFragment());
 	}
 
 	private void setupMenu(){
 		mResideMenu = new ResideMenu(this);
-		mResideMenu.setBackground(R.drawable.menu_background);//设置北京图片
+		mResideMenu.setBackground(R.drawable.menu_background);
 		mResideMenu.attachToActivity(this);
 		mResideMenu.setMenuListener(mMenuListener);
 		mResideMenu.setScaleValue(0.65f);
@@ -206,7 +154,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
 
 	private void changeFragment(Fragment targetFragment){
-		frameLayout.setVisibility(View.GONE);
+		mFrameLayout.setVisibility(View.GONE);
 		mResideMenu.clearIgnoredViewList();
 		getSupportFragmentManager()
 		.beginTransaction()
@@ -251,28 +199,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 			changeFragment(new MySaveFragment());
 		}else if (view == mMenu_exit) {
 		
-        	TextView textTitle = (TextView) frameLayout.findViewById(R.id.title);
-        	TextView textSure = (TextView) frameLayout.findViewById(R.id.delete);
-        	TextView textOk = (TextView) frameLayout.findViewById(R.id.ok);
-        	TextView textCancel = (TextView) frameLayout.findViewById(R.id.cancle);
-        	textTitle.setText("确定退出");
-        	textSure.setVisibility(View.GONE);
-        	frameLayout.setVisibility(View.VISIBLE);
-        	textOk.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View arg0) {
-					MainActivity.this.finish();
-				}
-			});
         	
-        	textCancel.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View arg0) {
-					frameLayout.setVisibility(View.GONE);
-				}
-			});
 		}
 
 		mResideMenu.closeMenu();
@@ -280,6 +207,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
 	public ResideMenu getResideMenu(){
 		return mResideMenu;
+		
 	}
 
 	@Override
@@ -313,23 +241,20 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 				if (Math.abs(values[0]) > 17 || Math.abs(values[1]) > 17 || Math.abs(values[2]) > 17 ) {
 					vibrator.vibrate(500);
 					if (!isSavedOne) {
-						Bitmap b = ScreenShot.takeScreenShot(MainActivity.this);
+						Bitmap b = ScreenShot.takeScreenShot(MainFrame.this);
 						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日HH时mm分ss秒");
 						File file=new File("/storage/sdcard1/csdn_liuhang");
 						if(!file.exists()){
 							file.mkdirs();
 						}
 						ScreenShot.savePic(b,file.getAbsolutePath()+"/"+simpleDateFormat.format(new Date(System.currentTimeMillis()))+".jpg");
-						//					Log.d("html","/storage/sdcard1/liuhang/"+simpleDateFormat.format(new Date(System.currentTimeMillis()))+".jpg");
-						//						Log.d("html","save success");
-						Toast.makeText(MainActivity.this,"图片已保存:"+file.getAbsolutePath()+"/"+simpleDateFormat.format(new Date(System.currentTimeMillis()))+".jpg",700).show();
+						Toast.makeText(MainFrame.this,"图片已保存:"+file.getAbsolutePath()+"/"+simpleDateFormat.format(new Date(System.currentTimeMillis()))+".jpg",700).show();
 						isSavedOne = true;
 					}
 
 				}
 			}
 		}
-		//		Log.d("html","i======="+isChecked+"====");
 	}
 	
 	/**
@@ -343,37 +268,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 			mResideMenu.closeMenu();
 			exitInt = 1;
 		}
-//		
-//        if (keyCode == KeyEvent.KEYCODE_BACK) { 
-//        	final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.dialogfram);
-//        	TextView textTitle = (TextView) frameLayout.findViewById(R.id.title);
-//        	TextView textSure = (TextView) frameLayout.findViewById(R.id.delete);
-//        	TextView textOk = (TextView) frameLayout.findViewById(R.id.ok);
-//        	TextView textCancel = (TextView) frameLayout.findViewById(R.id.cancle);
-//        	textTitle.setText("确定退出");
-//        	textSure.setVisibility(View.GONE);
-//        	frameLayout.setVisibility(View.VISIBLE);
-//        	textOk.setOnClickListener(new OnClickListener() {
-//				
-//				@Override
-//				public void onClick(View arg0) {
-//					MainActivity.this.finish();
-//				}
-//			});
-//        	
-//        	textCancel.setOnClickListener(new OnClickListener() {
-//				
-//				@Override
-//				public void onClick(View arg0) {
-//					frameLayout.setVisibility(View.GONE);
-//				}
-//			});
-//        	
-//        	
-////        	Log.d("html","====back has pressed=====");
-//            return true; 
-//        } 
-        return true; 
+		return true; 
     }
 
 	@Override

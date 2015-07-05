@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.netshull.csdn.R;
 
+import com.esc.adapter.ListViewAdapter;
 import com.esc.csdn.ACache;
 import com.esc.csdn.CirclePro;
 import com.esc.csdn.CirclePro.ClearData;
-import com.esc.csdn.ListViewAdapter;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -116,20 +116,4 @@ public class SettingFragment extends Fragment{
 			}
 		}
 	};
-	
-
-	/*@Override
-	public void onClick(View view) {
-		switch (view.getId()) {
-		case R.id.clear_data:
-			circlePro.setVisibility(View.VISIBLE);
-			
-			break;
-		case R.id.about_csdn:
-			startActivity(new Intent(getActivity(), AboutCsdnFragment.class));
-
-		default:
-			break;
-		}
-	}*/
 }

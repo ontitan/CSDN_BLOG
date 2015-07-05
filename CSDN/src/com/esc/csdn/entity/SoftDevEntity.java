@@ -10,8 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.netshull.csdn.R;
 
-import com.esc.csdn.IParser;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;

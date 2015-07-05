@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.netshull.csdn.R;
 
-import com.esc.csdn.ListViewAdapter;
-import com.esc.csdn.ViewPagerAdapter;
+import com.esc.adapter.ListViewAdapter;
+import com.esc.adapter.ViewPagerAdapter;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -50,7 +50,7 @@ public class AboutCsdnFragment extends FragmentActivity implements OnPageChangeL
 	protected void onCreate(Bundle arg0) {
 		// TODO Auto-generated method stub
 		super.onCreate(arg0);
-		setContentView(R.layout.about_csdn);
+		setContentView(R.layout.about_csdn_total_info);
 		mSwitchBtn=(ImageView)findViewById(R.id.back1);
 		mSwitchBtn.setOnClickListener(mListener);
 		mViewPager=(ViewPager)findViewById(R.id.mainViewPager);
@@ -100,7 +100,7 @@ public class AboutCsdnFragment extends FragmentActivity implements OnPageChangeL
 		for(int i=0;i<getResources().getStringArray(R.array.about_array).length;i++){
 			mList.add(getResources().getStringArray(R.array.about_array)[i]);
 		}
-		mListView.setAdapter(new ListViewAdapter(mList, this,R.layout.about_csdn_item,R.id.listTextItem));
+		mListView.setAdapter(new ListViewAdapter(mList, this,R.layout.about_csdn_listview_item,R.id.listTextItem));
 		
 	}
 	private OnClickListener mListener=new OnClickListener() {

@@ -39,7 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.esc.csdn.ACache;
-import com.esc.csdn.MainActivity;
+import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.CloudEntity;
@@ -81,8 +81,8 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 	private View mLayoutView;
 	private View parentView = null;
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		parentView = inflater.inflate(R.layout.mobile_layout, container, false);
-		ResideMenu resideMenu = ((MainActivity)getActivity()).getResideMenu();
+		parentView = inflater.inflate(R.layout.mobile_xlistview_layout, container, false);
+		ResideMenu resideMenu = ((MainFrame)getActivity()).getResideMenu();
 		((ViewGroup)(getActivity().findViewById(android.R.id.content))).getChildAt(0).setBackgroundColor(Color.parseColor("#121111"));
 		resideMenu.addIgnoredView(parentView);
 		mActivity = getActivity();
@@ -196,7 +196,7 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 			TextView mPubTime;
 			TextView mReadCount;
 			if (null == convertView) {
-				convertView = mLayoutInflater.inflate(R.layout.mobile_item,parent,false);
+				convertView = mLayoutInflater.inflate(R.layout.mobile_xlistview_item,parent,false);
 				viewHolder = new ViewHolder();
 				viewHolder.mTitle = (TextView) convertView.findViewById(R.id.mobile_title);
 				viewHolder.mImage = (ImageView) convertView.findViewById(R.id.mobile_image);
@@ -297,10 +297,6 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 							picUrl = "";
 						}
 						content = element.getElementsByTag("dd").get(0).text();
-						//					Log.i(TAG, "content length is :"+content.length());
-						//					if (content.length() > 100) {
-						//						content = content.substring(0, 50) + "...";
-						//					}
 						Elements tagElements = element.getElementsByAttributeValue("class","tag").get(0).getElementsByTag("a");
 						for (Element element2 : tagElements) {
 							tags.add(element2.text());

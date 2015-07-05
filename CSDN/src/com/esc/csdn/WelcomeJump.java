@@ -20,7 +20,7 @@ public class WelcomeJump extends Activity implements Runnable{
 		// TODO Auto-generated method stub
 		try {
 			Thread.sleep(3500);
-			startActivity(new Intent(WelcomeJump.this,MainActivity.class));
+			startActivity(new Intent(WelcomeJump.this,MainFrame.class));
 			this.finish();
 			
 		} catch (Exception e) {

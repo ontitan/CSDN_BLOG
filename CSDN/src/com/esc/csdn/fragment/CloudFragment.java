@@ -40,7 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.esc.csdn.ACache;
-import com.esc.csdn.MainActivity;
+import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.CloudEntity;
@@ -81,8 +81,8 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	private View parentView = null;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		parentView = inflater.inflate(R.layout.mobile_layout, container, false);
-		ResideMenu resideMenu = ((MainActivity)getActivity()).getResideMenu();
+		parentView = inflater.inflate(R.layout.mobile_xlistview_layout, container, false);
+		ResideMenu resideMenu = ((MainFrame)getActivity()).getResideMenu();
 		((ViewGroup)(getActivity().findViewById(android.R.id.content))).getChildAt(0).setBackgroundColor(Color.parseColor("#121111"));
 		resideMenu.addIgnoredView(parentView);
 		mActivity = getActivity();
@@ -195,7 +195,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			TextView mPubTime;
 			TextView mReadCount;
 			if (null == convertView) {
-				convertView = mLayoutInflater.inflate(R.layout.mobile_item,parent,false);
+				convertView = mLayoutInflater.inflate(R.layout.mobile_xlistview_item,parent,false);
 				viewHolder = new ViewHolder();
 				viewHolder.mTitle = (TextView) convertView.findViewById(R.id.mobile_title);
 				viewHolder.mImage = (ImageView) convertView.findViewById(R.id.mobile_image);

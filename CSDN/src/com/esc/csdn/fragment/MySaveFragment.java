@@ -40,7 +40,7 @@ import com.baoyz.swipemenulistview.SwipeMenuLayout;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.baoyz.swipemenulistview.SwipeMenuListView.OnMenuItemClickListener;
 import com.baoyz.swipemenulistview.SwipeMenuListView.OnSwipeListener;
-import com.esc.csdn.MainActivity;
+import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileTitleSave;
 
@@ -63,7 +63,7 @@ public class MySaveFragment extends Fragment implements OnTouchListener{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View parentView = inflater.inflate(R.layout.my_save,container,false);
-		ResideMenu resideMenu = ((MainActivity)getActivity()).getResideMenu();
+		ResideMenu resideMenu = ((MainFrame)getActivity()).getResideMenu();
 		resideMenu.addIgnoredView(parentView);
 		mActivity = getActivity();
 		
