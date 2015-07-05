@@ -158,12 +158,12 @@ public final class R {
 		public static final int normal = 0x7f06002b;
 		public static final int outsideInset = 0x7f06000a;
 		public static final int outsideOverlay = 0x7f060009;
-		public static final int ptr_id_header = 0x7f060060;
-		public static final int ptr_id_image = 0x7f060061;
-		public static final int ptr_id_last_updated = 0x7f060065;
-		public static final int ptr_id_spinner = 0x7f060062;
-		public static final int ptr_id_text = 0x7f060064;
-		public static final int ptr_id_textwrapper = 0x7f060063;
+		public static final int ptr_id_header = 0x7f06005b;
+		public static final int ptr_id_image = 0x7f06005c;
+		public static final int ptr_id_last_updated = 0x7f060060;
+		public static final int ptr_id_spinner = 0x7f06005d;
+		public static final int ptr_id_text = 0x7f06005f;
+		public static final int ptr_id_textwrapper = 0x7f06005e;
 		public static final int right = 0x7f060013;
 		public static final int rtl = 0x7f060017;
 		public static final int scrapped_view = 0x7f060000;
@@ -188,7 +188,7 @@ public final class R {
 		public static final int yes = 0x7f060022;
 	}
 	public static final class layout {
-		public static final int ptr_header = 0x7f030010;
+		public static final int ptr_header = 0x7f03000f;
 		public static final int xlistview_footer = 0x7f030014;
 		public static final int xlistview_header = 0x7f030015;
 	}
