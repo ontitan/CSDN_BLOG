@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.netshull.csdn.R;
 
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -64,7 +65,6 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	private String isChecked = "";
 	
 	private int exitInt = 1;
-	private FrameLayout mFrameLayout = null;
 	private ImageView mShareBtn=null;
 
 	@Override
@@ -76,13 +76,14 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		cache = ACache.get(MainFrame.this);
 		boolean isConn =  NetUtil.checkNet(MainFrame.this);
 		if (isConn) {
-			 Toast.makeText(MainFrame.this, "net is open!", Toast.LENGTH_LONG).show();
+			 //Toast.makeText(MainFrame.this, "net is open!", Toast.LENGTH_LONG).show();
+			 
 		}else{
-			Toast.makeText(MainFrame.this, "net is close!", Toast.LENGTH_LONG).show();
+			//Toast.makeText(MainFrame.this, "net is close!", Toast.LENGTH_LONG).show();
 		}
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		vibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
-		changeFragment(new SettingFragment());
+		changeFragment(new CloudFragment());
 	}
 
 	private void setupMenu(){
@@ -154,7 +155,6 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 
 
 	private void changeFragment(Fragment targetFragment){
-		mFrameLayout.setVisibility(View.GONE);
 		mResideMenu.clearIgnoredViewList();
 		getSupportFragmentManager()
 		.beginTransaction()
