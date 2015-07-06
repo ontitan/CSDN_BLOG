@@ -31,7 +31,6 @@ drawable-xhdpi*/
 drawable-xxhdpi*/
 libs
 res*/
-src*/
 *.lib
 *.sbr
 obj/

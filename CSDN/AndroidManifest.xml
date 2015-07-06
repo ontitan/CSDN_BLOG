@@ -29,12 +29,12 @@
             android:value="CSDNnews_yt" >
         </meta-data>
         <activity
-            android:name="com.esc.csdn.MainActivity"
+            android:name="com.esc.csdn.MainFrame"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar" >
             
         </activity>
-        <activity android:name="com.esc.csdn.MobileTitle" >
+        <activity android:name="com.esc.csdn.WebViewLoadContent" >
         </activity>
         <activity android:name="com.esc.csdn.fragment.AboutCsdnFragment" android:theme="@android:style/Theme.NoTitleBar"></activity>
         <activity 
