@@ -106,7 +106,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		.cacheInMemory(true)
 		.cacheOnDisk(true)
 		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(20))
+		.displayer(new RoundedBitmapDisplayer(10))
 		.build();
 
 		mIndustryEntityList = new ArrayList<IndustryEntity>();

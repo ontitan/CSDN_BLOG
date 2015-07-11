@@ -48,7 +48,6 @@ import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.MyCircleView;
 import com.esc.csdn.dao.MobileDao;
-import com.esc.csdn.entity.CloudEntity;
 import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.ScreenShot;
@@ -61,6 +60,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.special.ResideMenu.ResideMenu;
 
@@ -112,7 +112,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		.cacheInMemory(true)
 		.cacheOnDisk(true)
 		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(20))
+		.displayer(new RoundedBitmapDisplayer(10))
 		.build();
 
 		mMobileEntityList = new ArrayList<MobileEntity>();
@@ -155,7 +155,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 				return false;
 			}
 		});
-
+		//mListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();

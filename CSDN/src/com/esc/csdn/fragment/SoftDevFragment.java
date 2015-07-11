@@ -105,16 +105,13 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		.cacheInMemory(true)
 		.cacheOnDisk(true)
 		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(20))
+		.displayer(new RoundedBitmapDisplayer(10))
 		.build();
 		
 		mSoftDevEntityList = new ArrayList<SoftDevEntity>();
-		//		Log.i(TAG, mLayoutView == null ? "mlayout is null" : "not null");
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
 		mSoftDevEntityList = new ArrayList<SoftDevEntity>();
 		mobileAdapter = new MobileAdapter();
-		//		Log.i(TAG, mListView == null ? "mListView is null" : " mListView not null");
-
 		mListView.setAdapter(mobileAdapter);
 
 

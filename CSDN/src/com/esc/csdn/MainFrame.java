@@ -44,6 +44,7 @@ import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.ScreenShot;
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
+import com.esc.csdn.entity.*;
 
 public class MainFrame extends FragmentActivity implements View.OnClickListener,SensorEventListener,OnTouchListener{
 

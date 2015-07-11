@@ -54,6 +54,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.special.ResideMenu.ResideMenu;
 
@@ -81,9 +82,8 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		resideMenu.addIgnoredView(parentView);
 		mActivity = getActivity();
 		mLayoutView = parentView;
-		init();
-
 		parentView.setOnTouchListener(this);
+		init();
 		return parentView;
 	}
 
@@ -102,7 +102,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		.cacheInMemory(true)
 		.cacheOnDisk(true)
 		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(20))
+		.displayer(new RoundedBitmapDisplayer(10))
 		.build();
 
 		mCloudEntityList = new ArrayList<CloudEntity>();
@@ -126,7 +126,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 					mActivity.startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
 				}else{
-					Toast.makeText(getActivity(), "请打开网络...",800).show();
+					Toast.makeText(getActivity(), "请打开网络连接...",Toast.LENGTH_LONG).show();
 				}
 			}
 		});
@@ -139,7 +139,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 				return false;
 			}
 		});
-
+		//mListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();
@@ -149,14 +149,8 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			mListView.startRefresh();
 		}
 	}
-
-
-
-
 	private class MobileAdapter extends BaseAdapter {
-		InputStream inputStream = null;
-		Bitmap bitmap = null;
-		String image_url = "";
+		
 		private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 		@Override
 		public int getCount() {
@@ -211,9 +205,9 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 			}else{
 				if (!NetUtil.checkNet(mActivity)) {
-					Toast.makeText(mActivity,"网络连接异常,请检查！",1000).show();
+					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "已加载全部",1000).show();
+					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
 				}
 
 			}
@@ -256,9 +250,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 				try {
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
 
-					Element leftDiv = doc.getElementsByAttributeValue("id","ddimagetabs").get(0);
-					//		System.out.println(leftDivs);
-
 					String title = "";
 					String titleUrl = "";
 					String pubTime = "";
@@ -268,7 +259,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 					String content = "";
 					List<String>tags = new ArrayList<String>();
 					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
-					//						System.out.println(contentDiv);
 					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
 					CloudEntity cloudEntity = null;
 					for (Element element : contents) {
@@ -289,8 +279,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 							tags.add(element2.text());
 						}
 						cloudEntity = new CloudEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
-
-
 						cacheList = new MobileDao(mActivity).getSaveCLoud();
 						if (null != cacheList && cacheList.size() > 0) {
 							for (CloudEntity entity : cacheList) {
@@ -359,9 +347,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			}
 		}
 	}
-
-
-
 	@Override
 	public void onLoadMore() {
 		new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/cloud/"+currentPage++,"isloadmore"});

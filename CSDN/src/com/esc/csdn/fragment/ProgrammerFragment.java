@@ -42,7 +42,6 @@ import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
-import com.esc.csdn.entity.CloudEntity;
 import com.esc.csdn.entity.ProgrammerEntity;
 import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.entity.SoftDevEntity;
@@ -106,7 +105,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 		.cacheInMemory(true)
 		.cacheOnDisk(true)
 		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(20))
+		.displayer(new RoundedBitmapDisplayer(10))
 		.build();
 
 		mProgrammerEntityList = new ArrayList<ProgrammerEntity>();
@@ -148,7 +147,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();
-		mProgrammerEntityList = new MobileDao(mActivity).getSaveMagzine();
+		mProgrammerEntityList = new MobileDao(mActivity).getSaveProgrammer();
 		if (null == mProgrammerEntityList || mProgrammerEntityList.size() == 0) {
 			mProgrammerEntityList = new ArrayList<ProgrammerEntity>();
 			mListView.startRefresh();
@@ -246,7 +245,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 
 			if (!isConnected) {
 				Log.d("test","the net work is "+isConnected);
-				mProgrammerEntityList = new MobileDao(mActivity).getSaveMagzine();
+				mProgrammerEntityList = new MobileDao(mActivity).getSaveProgrammer();
 			}else{ 
 				String isTag = "";
 				Document doc;
@@ -288,7 +287,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 						cloudEntity = new ProgrammerEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
 
 
-						cacheList = new MobileDao(mActivity).getSaveMagzine();
+						cacheList = new MobileDao(mActivity).getSaveProgrammer();
 						if (null != cacheList && cacheList.size() > 0) {
 							for (ProgrammerEntity entity : cacheList) {
 								if (entity.getTitleUrl().equals(cloudEntity.getTitleUrl())) {

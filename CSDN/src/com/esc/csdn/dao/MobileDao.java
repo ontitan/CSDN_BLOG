@@ -79,7 +79,7 @@ public class MobileDao {
 	}
 	
 	
-	public List<ProgrammerEntity>getSaveMagzine() {
+	public List<ProgrammerEntity>getSaveProgrammer() {
 		try {
 			list4 = dbUtils.findAll(ProgrammerEntity.class);
 		} catch (DbException e) {

@@ -1,33 +1,13 @@
 package com.esc.csdn.entity;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.netshull.csdn.R;
 
-
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+
 
 public class IndustryEntity{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private int id;
 	private String title;
 	private String titleUrl;
 	private String pubTime;
@@ -37,15 +17,20 @@ public class IndustryEntity{
 	private String content;
 	private List<String>tags;
 	private Bitmap bitmap;
-	public String getTitle() {
-		return title;
+	
+	public IndustryEntity() {
 	}
 
-
-	
-
-
-
+	public IndustryEntity(String title, String titleUrl, String pubTime,
+			String readCount, String picUrl, String content) {
+		super();
+		this.title = title;
+		this.titleUrl = titleUrl;
+		this.pubTime = pubTime;
+		this.readCount = readCount;
+		this.picUrl = picUrl;
+		this.content = content;
+	}
 	public IndustryEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags,Bitmap bitmap) {
@@ -74,7 +59,9 @@ public class IndustryEntity{
 		this.tags = tags;
 	}
 
-
+	public String getTitle() {
+		return title;
+	}
 
 
 	public String getTitleUrl() {
@@ -83,13 +70,6 @@ public class IndustryEntity{
 
 	public void setTitleUrl(String titleUrl) {
 		this.titleUrl = titleUrl;
-	}
-
-
-
-
-
-	public IndustryEntity() {
 	}
 
 	public void setTitle(String title) {
@@ -140,19 +120,4 @@ public class IndustryEntity{
 		this.bitmap = bitmap;
 	}
 
-
-
-
-
-
-	public IndustryEntity(String title, String titleUrl, String pubTime,
-			String readCount, String picUrl, String content) {
-		super();
-		this.title = title;
-		this.titleUrl = titleUrl;
-		this.pubTime = pubTime;
-		this.readCount = readCount;
-		this.picUrl = picUrl;
-		this.content = content;
-	}
 }
