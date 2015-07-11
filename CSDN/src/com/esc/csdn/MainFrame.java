@@ -35,7 +35,7 @@ import android.widget.Toast;
 
 import com.esc.csdn.fragment.CloudFragment;
 import com.esc.csdn.fragment.IndustryFragment;
-import com.esc.csdn.fragment.MagzineFragment;
+import com.esc.csdn.fragment.ProgrammerFragment;
 import com.esc.csdn.fragment.MobileFragment;
 import com.esc.csdn.fragment.MySaveFragment;
 import com.esc.csdn.fragment.SettingFragment;
@@ -158,19 +158,15 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		mResideMenu.clearIgnoredViewList();
 		getSupportFragmentManager()
 		.beginTransaction()
-		.replace(R.id.main_fragment, targetFragment, "fragment")
+		.replace(R.id.main_fragment, targetFragment)
 		.setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 		.commit();
 	}
 
-	/**
-	 * set title
-	 * @param title title name
-	 */
+	
 	public void setActionBarTitle(String title){
 		TextView titleTv = (TextView) findViewById(R.id.title);
 		titleTv.setText(title);
-		System.out.println("title:"+titleTv.getText().toString());
 	}
 
 	@Override
@@ -183,7 +179,7 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 			changeFragment(new IndustryFragment());
 		}else if (view == mMenu_programmer){
 			setActionBarTitle(mMenu_name[3]);
-			changeFragment(new MagzineFragment());
+			changeFragment(new ProgrammerFragment());
 
 		}else if (view == mMenu_mobile){
 			setActionBarTitle(mMenu_name[1]);

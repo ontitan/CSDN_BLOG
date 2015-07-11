@@ -13,31 +13,24 @@ import com.special.ResideMenu.ResideMenu;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
-import com.baoyz.swipemenulistview.SwipeMenuLayout;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.baoyz.swipemenulistview.SwipeMenuListView.OnMenuItemClickListener;
 import com.baoyz.swipemenulistview.SwipeMenuListView.OnSwipeListener;
 import com.esc.csdn.MainFrame;
@@ -55,7 +48,6 @@ public class MySaveFragment extends Fragment implements OnTouchListener{
 	private DbUtils dbUtils = null;
 	private LayoutInflater mLayoutInflater = null;
 	
-	private  MobileTitleSave saveEntity = null;
 
 	RelativeLayout relativeLayout = null;
 	
@@ -79,12 +71,6 @@ public class MySaveFragment extends Fragment implements OnTouchListener{
 		swipeMenuListView = (SwipeMenuListView) mLayoutView.findViewById(R.id.my_save_list);
 		try {
 			saveLists = dbUtils.findAll(MobileTitleSave.class);
-			//			if (null != saveLists && saveLists.size() > 0) {
-			//				for (MobileTitleSave mobileTitleSave : saveLists) {
-			//					Log.d("test",mobileTitleSave.getTitle());
-			//				}
-			//			}
-			
 			if (null == saveLists || saveLists.size() == 0) {
 				relativeLayout.setVisibility(View.VISIBLE);
 			}else{

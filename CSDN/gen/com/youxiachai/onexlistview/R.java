@@ -116,11 +116,11 @@ public final class R {
 		public static final int deepblue = 0x7f050000;
 	}
 	public static final class drawable {
-		public static final int default_ptr_flip_bottom = 0x7f020014;
-		public static final int ic_launcher = 0x7f02001e;
-		public static final int progressbarbg = 0x7f020030;
-		public static final int progressbarstyle = 0x7f020031;
-		public static final int xlistview_arrow = 0x7f02003f;
+		public static final int default_ptr_flip_bottom = 0x7f02000f;
+		public static final int ic_launcher = 0x7f020018;
+		public static final int progressbarbg = 0x7f020021;
+		public static final int progressbarstyle = 0x7f020022;
+		public static final int xlistview_arrow = 0x7f020029;
 	}
 	public static final class id {
 		public static final int afterDescendants = 0x7f060028;
@@ -158,12 +158,12 @@ public final class R {
 		public static final int normal = 0x7f06002b;
 		public static final int outsideInset = 0x7f06000a;
 		public static final int outsideOverlay = 0x7f060009;
-		public static final int ptr_id_header = 0x7f060054;
-		public static final int ptr_id_image = 0x7f060055;
-		public static final int ptr_id_last_updated = 0x7f060059;
-		public static final int ptr_id_spinner = 0x7f060056;
-		public static final int ptr_id_text = 0x7f060058;
-		public static final int ptr_id_textwrapper = 0x7f060057;
+		public static final int ptr_id_header = 0x7f060051;
+		public static final int ptr_id_image = 0x7f060052;
+		public static final int ptr_id_last_updated = 0x7f060056;
+		public static final int ptr_id_spinner = 0x7f060053;
+		public static final int ptr_id_text = 0x7f060055;
+		public static final int ptr_id_textwrapper = 0x7f060054;
 		public static final int right = 0x7f060013;
 		public static final int rtl = 0x7f060017;
 		public static final int scrapped_view = 0x7f060000;
@@ -176,21 +176,21 @@ public final class R {
 		public static final int viewEnd = 0x7f060021;
 		public static final int viewStart = 0x7f060020;
 		public static final int visible = 0x7f060001;
-		public static final int xlistview_footer_content = 0x7f060069;
-		public static final int xlistview_footer_hint_textview = 0x7f06006b;
-		public static final int xlistview_footer_progressbar = 0x7f06006a;
-		public static final int xlistview_header_arrow = 0x7f060070;
-		public static final int xlistview_header_content = 0x7f06006c;
-		public static final int xlistview_header_hint_textview = 0x7f06006e;
-		public static final int xlistview_header_progressbar = 0x7f060071;
-		public static final int xlistview_header_text = 0x7f06006d;
-		public static final int xlistview_header_time = 0x7f06006f;
+		public static final int xlistview_footer_content = 0x7f060066;
+		public static final int xlistview_footer_hint_textview = 0x7f060068;
+		public static final int xlistview_footer_progressbar = 0x7f060067;
+		public static final int xlistview_header_arrow = 0x7f06006d;
+		public static final int xlistview_header_content = 0x7f060069;
+		public static final int xlistview_header_hint_textview = 0x7f06006b;
+		public static final int xlistview_header_progressbar = 0x7f06006e;
+		public static final int xlistview_header_text = 0x7f06006a;
+		public static final int xlistview_header_time = 0x7f06006c;
 		public static final int yes = 0x7f060022;
 	}
 	public static final class layout {
-		public static final int ptr_header = 0x7f03000e;
-		public static final int xlistview_footer = 0x7f030013;
-		public static final int xlistview_header = 0x7f030014;
+		public static final int ptr_header = 0x7f03000b;
+		public static final int xlistview_footer = 0x7f030010;
+		public static final int xlistview_header = 0x7f030011;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f080001;

@@ -4,13 +4,7 @@ import java.util.List;
 
 import android.graphics.Bitmap;
 
-public class MagzineEntity {
-
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class ProgrammerEntity {
 	private int id;
 	private String title;
 	private String titleUrl;
@@ -30,7 +24,7 @@ public class MagzineEntity {
 
 
 
-	public MagzineEntity(String title, String titleUrl, String pubTime,
+	public ProgrammerEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags,Bitmap bitmap) {
 		this.title = title;
@@ -45,7 +39,7 @@ public class MagzineEntity {
 	}
 
 
-	public MagzineEntity(String title, String titleUrl, String pubTime,
+	public ProgrammerEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags) {
 		this.title = title;
@@ -73,7 +67,7 @@ public class MagzineEntity {
 
 
 
-	public MagzineEntity() {
+	public ProgrammerEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -136,7 +130,7 @@ public class MagzineEntity {
 
 
 
-	public MagzineEntity(String title, String titleUrl, String pubTime,
+	public ProgrammerEntity(String title, String titleUrl, String pubTime,
 			String readCount, String picUrl, String content) {
 		super();
 		this.title = title;

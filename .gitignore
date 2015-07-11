@@ -21,6 +21,7 @@ Thumbs.db
 *.log
 [Bb]in
 [Dd]ebug*/
+res*/
 ResideMenu*/
 SwipeMenuListView*/
 XListView*/
@@ -30,7 +31,6 @@ drawable-mdpi*/
 drawable-xhdpi*/
 drawable-xxhdpi*/
 libs
-res*/
 *.lib
 *.sbr
 obj/

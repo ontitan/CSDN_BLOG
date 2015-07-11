@@ -67,7 +67,7 @@ import com.special.ResideMenu.ResideMenu;
 public class MobileFragment extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
 	private XListView mListView = null;
 	private MobileAdapter mobileAdapter = null;
-	private List<MobileEntity>mobile_list = new ArrayList<MobileEntity>();
+	private List<MobileEntity>mMobileEntityList = new ArrayList<MobileEntity>();
 	private LayoutInflater mLayoutInflater = null;
 	private ImageLoader imageLoader = ImageLoader.getInstance();
 	private DisplayImageOptions options;
@@ -106,7 +106,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		dbUtils = DbUtils.create(mActivity);
 
 		options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_stub1)
+		.showImageOnLoading(R.drawable.ic_on_loading)
 		.showImageForEmptyUri(R.drawable.ic_empty)
 		.showImageOnFail(R.drawable.ic_error)
 		.cacheInMemory(true)
@@ -115,10 +115,9 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		.displayer(new RoundedBitmapDisplayer(20))
 		.build();
 
-		mobile_list = new ArrayList<MobileEntity>();
-		//		Log.i(TAG, mLayoutView == null ? "mlayout is null" : "not null");
+		mMobileEntityList = new ArrayList<MobileEntity>();
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mobile_list = new ArrayList<MobileEntity>();
+		mMobileEntityList = new ArrayList<MobileEntity>();
 		mobileAdapter = new MobileAdapter();
 		//		Log.i(TAG, mListView == null ? "mListView is null" : " mListView not null");
 
@@ -135,8 +134,8 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 
 				if (NetUtil.checkNet(getActivity())) {
 					Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-					intent.putExtra("url",mobile_list.get(position-1).getTitleUrl());
-					intent.putExtra("title",mobile_list.get(position-1).getTitle());
+					intent.putExtra("url",mMobileEntityList.get(position-1).getTitleUrl());
+					intent.putExtra("title",mMobileEntityList.get(position-1).getTitle());
 					intent.putExtra("titleIndex",1);
 					mActivity.startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
@@ -160,9 +159,9 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();
-		mobile_list = new MobileDao(mActivity).getSavedMobile();
-		if (null == mobile_list || mobile_list.size() == 0) {
-			mobile_list = new ArrayList<MobileEntity>();
+		mMobileEntityList = new MobileDao(mActivity).getSavedMobile();
+		if (null == mMobileEntityList || mMobileEntityList.size() == 0) {
+			mMobileEntityList = new ArrayList<MobileEntity>();
 			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
 			new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/"});
 		}
@@ -180,7 +179,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return null == mobile_list ? 0 :mobile_list.size();
+			return null == mMobileEntityList ? 0 :mMobileEntityList.size();
 		}
 
 		@Override
@@ -199,11 +198,6 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ViewHolder viewHolder;
-			TextView mTitle;
-			ImageView mImage;
-			TextView mContent;
-			TextView mPubTime;
-			TextView mReadCount;
 			if (null == convertView) {
 				convertView = mLayoutInflater.inflate(R.layout.mobile_xlistview_item,parent,false);
 				viewHolder = new ViewHolder();
@@ -217,14 +211,13 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 			}else{
 				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			Log.i(TAG, "title========="+mobile_list.get(position).getTitle());
-			if (null != mobile_list && mobile_list.size() > 0) {
-				viewHolder.mTitle.setText(mobile_list.get(position).getTitle());
-				viewHolder.mContent.setText(mobile_list.get(position).getContent());
-				viewHolder.mPubTime.setText(mobile_list.get(position).getPubTime());
-				viewHolder.mReadCount.setText(mobile_list.get(position).getReadCount());
-				viewHolder.mCommentCount.setText(mobile_list.get(position).getCommentCount());
-				final String image_url = mobile_list.get(position).getPicUrl();
+			if (null != mMobileEntityList && mMobileEntityList.size() > 0) {
+				viewHolder.mTitle.setText(mMobileEntityList.get(position).getTitle());
+				viewHolder.mContent.setText(mMobileEntityList.get(position).getContent());
+				viewHolder.mPubTime.setText(mMobileEntityList.get(position).getPubTime());
+				viewHolder.mReadCount.setText(mMobileEntityList.get(position).getReadCount());
+				viewHolder.mCommentCount.setText(mMobileEntityList.get(position).getCommentCount());
+				final String image_url = mMobileEntityList.get(position).getPicUrl();
 				if (null == image_url || image_url.equals("")) {
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.GONE);
 				}else {
@@ -270,10 +263,8 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 
 			if (!isConnected) {
 				Log.d("test","the net work is "+isConnected);
-				mobile_list = new MobileDao(mActivity).getSavedMobile();
-				//				for (MobileEntity eti : mobile_list) {
-				//					Log.d("test",eti.getTitle());
-				//				}
+				mMobileEntityList = new MobileDao(mActivity).getSavedMobile();
+				
 			}else{ 
 				String isTag = "";
 				Document doc;
@@ -284,8 +275,6 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
 
 					Element leftDiv = doc.getElementsByAttributeValue("id","ddimagetabs").get(0);
-					//		System.out.println(leftDivs);
-
 					String title = "";
 					String titleUrl = "";
 					String pubTime = "";
@@ -295,7 +284,6 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 					String content = "";
 					List<String>tags = new ArrayList<String>();
 					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
-					//						System.out.println(contentDiv);
 					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
 					MobileEntity mobileEntity = null;
 					for (Element element : contents) {
@@ -311,10 +299,6 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 							picUrl = "";
 						}
 						content = element.getElementsByTag("dd").get(0).text();
-						//					Log.i(TAG, "content length is :"+content.length());
-						//					if (content.length() > 100) {
-						//						content = content.substring(0, 50) + "...";
-						//					}
 						Elements tagElements = element.getElementsByAttributeValue("class","tag").get(0).getElementsByTag("a");
 						for (Element element2 : tagElements) {
 							tags.add(element2.text());
@@ -339,7 +323,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 							}
 						}
 
-						mobile_list.add(mobileEntity);
+						mMobileEntityList.add(mobileEntity);
 					}
 				} catch (IOException e1) {
 					e1.printStackTrace();

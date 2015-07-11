@@ -21,7 +21,6 @@ import org.netshull.csdn.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -44,7 +43,6 @@ import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.CloudEntity;
-import com.esc.csdn.entity.IndustryEntity;
 import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
@@ -62,19 +60,16 @@ import com.special.ResideMenu.ResideMenu;
 public class CloudFragment extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
 	private XListView mListView = null;
 	private MobileAdapter mobileAdapter = null;
-	private List<CloudEntity>mobile_list = new ArrayList<CloudEntity>();
+	private List<CloudEntity>mCloudEntityList = new ArrayList<CloudEntity>();
 	private LayoutInflater mLayoutInflater = null;
 	private ImageLoader imageLoader = ImageLoader.getInstance();
 	private DisplayImageOptions options;
 
 	private DbUtils dbUtils = null;
 
-
 	private int currentPage = 2;
 
 	private ACache cache = null;
-	private static final String TAG = "Mobile";
-
 	private Activity mActivity;
 
 	private View mLayoutView;
@@ -83,7 +78,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		parentView = inflater.inflate(R.layout.mobile_xlistview_layout, container, false);
 		ResideMenu resideMenu = ((MainFrame)getActivity()).getResideMenu();
-		((ViewGroup)(getActivity().findViewById(android.R.id.content))).getChildAt(0).setBackgroundColor(Color.parseColor("#121111"));
 		resideMenu.addIgnoredView(parentView);
 		mActivity = getActivity();
 		mLayoutView = parentView;
@@ -102,7 +96,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		dbUtils = DbUtils.create(mActivity);
 
 		options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_stub1)
+		.showImageOnLoading(R.drawable.ic_on_loading)
 		.showImageForEmptyUri(R.drawable.ic_empty)
 		.showImageOnFail(R.drawable.ic_error)
 		.cacheInMemory(true)
@@ -111,11 +105,10 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		.displayer(new RoundedBitmapDisplayer(20))
 		.build();
 
-		mobile_list = new ArrayList<CloudEntity>();
+		mCloudEntityList = new ArrayList<CloudEntity>();
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mobile_list = new ArrayList<CloudEntity>();
+		mCloudEntityList = new ArrayList<CloudEntity>();
 		mobileAdapter = new MobileAdapter();
-		//		Log.i(TAG, mListView == null ? "mListView is null" : " mListView not null");
 
 		mListView.setAdapter(mobileAdapter);
 
@@ -125,11 +118,10 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			@Override
 			public void onItemClick(AdapterView<?> adapter, View view, int position,
 					long arg3) {
-				//				Log.i(TAG,mobile_list.get(position).getTitle());
 				if (NetUtil.checkNet(getActivity())) {
 					Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-					intent.putExtra("url",mobile_list.get(position-1).getTitleUrl());
-					intent.putExtra("title",mobile_list.get(position-1).getTitle());
+					intent.putExtra("url",mCloudEntityList.get(position-1).getTitleUrl());
+					intent.putExtra("title",mCloudEntityList.get(position-1).getTitle());
 					intent.putExtra("titleIndex",1);
 					mActivity.startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
@@ -151,12 +143,11 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();
-		mobile_list = new MobileDao(mActivity).getSaveCLoud();
-		if (null == mobile_list || mobile_list.size() == 0) {
-			mobile_list = new ArrayList<CloudEntity>();
+		mCloudEntityList = new MobileDao(mActivity).getSaveCLoud();
+		if (null == mCloudEntityList || mCloudEntityList.size() == 0) {
+			mCloudEntityList = new ArrayList<CloudEntity>();
 			mListView.startRefresh();
 		}
-		//		mListView.startRefresh();
 	}
 
 
@@ -170,7 +161,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return null == mobile_list ? 0 :mobile_list.size();
+			return null == mCloudEntityList ? 0 :mCloudEntityList.size();
 		}
 
 		@Override
@@ -189,11 +180,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ViewHolder viewHolder;
-			TextView mTitle;
-			ImageView mImage;
-			TextView mContent;
-			TextView mPubTime;
-			TextView mReadCount;
 			if (null == convertView) {
 				convertView = mLayoutInflater.inflate(R.layout.mobile_xlistview_item,parent,false);
 				viewHolder = new ViewHolder();
@@ -207,14 +193,13 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			}else{
 				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			Log.i(TAG, "title========="+mobile_list.get(position).getTitle());
-			if (null != mobile_list && mobile_list.size() > 0) {
-				viewHolder.mTitle.setText(mobile_list.get(position).getTitle());
-				viewHolder.mContent.setText(mobile_list.get(position).getContent());
-				viewHolder.mPubTime.setText(mobile_list.get(position).getPubTime());
-				viewHolder.mReadCount.setText(mobile_list.get(position).getReadCount());
-				viewHolder.mCommentCount.setText(mobile_list.get(position).getCommentCount());
-				final String image_url = mobile_list.get(position).getPicUrl();
+			if (null != mCloudEntityList && mCloudEntityList.size() > 0) {
+				viewHolder.mTitle.setText(mCloudEntityList.get(position).getTitle());
+				viewHolder.mContent.setText(mCloudEntityList.get(position).getContent());
+				viewHolder.mPubTime.setText(mCloudEntityList.get(position).getPubTime());
+				viewHolder.mReadCount.setText(mCloudEntityList.get(position).getReadCount());
+				viewHolder.mCommentCount.setText(mCloudEntityList.get(position).getCommentCount());
+				final String image_url = mCloudEntityList.get(position).getPicUrl();
 
 				if (null == image_url || image_url.equals("")) {
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.GONE);
@@ -226,9 +211,9 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 			}else{
 				if (!NetUtil.checkNet(mActivity)) {
-					Toast.makeText(mActivity, "please check the network link",1000).show();
+					Toast.makeText(mActivity,"网络连接异常,请检查！",1000).show();
 				}else{
-					Toast.makeText(mActivity, "no data more",1000).show();
+					Toast.makeText(mActivity, "已加载全部",1000).show();
 				}
 
 			}
@@ -239,7 +224,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	}
 
 	private class ViewHolder {
-
 		TextView mTitle;
 		ImageView mImage;
 		TextView mContent;
@@ -265,11 +249,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			boolean isConnected = NetUtil.checkNet(mActivity);
 
 			if (!isConnected) {
-				Log.d("test","the net work is "+isConnected);
-				mobile_list = new MobileDao(mActivity).getSaveCLoud();
-				//				for (MobileEntity eti : mobile_list) {
-				//					Log.d("test",eti.getTitle());
-				//				}
+				mCloudEntityList = new MobileDao(mActivity).getSaveCLoud();
 			}else{ 
 				String isTag = "";
 				Document doc;
@@ -304,10 +284,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 							picUrl = "";
 						}
 						content = element.getElementsByTag("dd").get(0).text();
-						//					Log.i(TAG, "content length is :"+content.length());
-						//					if (content.length() > 100) {
-						//						content = content.substring(0, 50) + "...";
-						//					}
 						Elements tagElements = element.getElementsByAttributeValue("class","tag").get(0).getElementsByTag("a");
 						for (Element element2 : tagElements) {
 							tags.add(element2.text());
@@ -331,15 +307,15 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 								} catch (Exception e) {
 									Log.d("html",isTag);
 									if (null != isTag && "isrefresh".equals(isTag)) {
-										mobile_list = dbUtils.findAll(CloudEntity.class);
-										if (null != mobile_list) {
-											mobile_list.add(0, cloudEntity);
+										mCloudEntityList = dbUtils.findAll(CloudEntity.class);
+										if (null != mCloudEntityList) {
+											mCloudEntityList.add(0, cloudEntity);
 											dbUtils.delete(MobileEntity.class);
-											dbUtils.saveAll(mobile_list);
+											dbUtils.saveAll(mCloudEntityList);
 										}
 									}else {
 										dbUtils.save(cloudEntity);
-										mobile_list.add(cloudEntity);
+										mCloudEntityList.add(cloudEntity);
 									}
 								}
 								

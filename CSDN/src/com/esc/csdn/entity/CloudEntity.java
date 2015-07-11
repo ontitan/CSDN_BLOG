@@ -5,12 +5,6 @@ import java.util.List;
 import android.graphics.Bitmap;
 
 public class CloudEntity {
-
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private int id;
 	private String title;
 	private String titleUrl;
@@ -24,12 +18,6 @@ public class CloudEntity {
 	public String getTitle() {
 		return title;
 	}
-
-
-
-
-
-
 	public CloudEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags,Bitmap bitmap) {
@@ -43,8 +31,6 @@ public class CloudEntity {
 		this.tags = tags;
 		this.bitmap = bitmap;
 	}
-
-
 	public CloudEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags) {
@@ -57,22 +43,12 @@ public class CloudEntity {
 		this.content = content;
 		this.tags = tags;
 	}
-
-
-
-
 	public String getTitleUrl() {
 		return titleUrl;
 	}
-
 	public void setTitleUrl(String titleUrl) {
 		this.titleUrl = titleUrl;
 	}
-
-
-
-
-
 	public CloudEntity() {
 		super();
 		// TODO Auto-generated constructor stub
