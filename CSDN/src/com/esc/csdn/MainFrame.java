@@ -54,9 +54,9 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	private ResideMenuItem mMenu_cloud;
 	private ResideMenuItem mMenu_mobile;
 	private ResideMenuItem mMenu_industry;
-	private ResideMenuItem mMenu_magzine;
+	private ResideMenuItem mMenu_programmer;
 	private ResideMenuItem mMenu_save;
-	private ResideMenuItem mMenu_blog;
+	private ResideMenuItem mMenu_sw_development;
 	private ResideMenuItem mMenu_exit;
 	private ResideMenuItem mMenu_settings;
 	private SensorManager sensorManager = null;
@@ -97,17 +97,17 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		this.mMenu_cloud = new ResideMenuItem(this, R.drawable.bg_cloud, mMenu_name[0]);
 		this.mMenu_mobile = new ResideMenuItem(this, R.drawable.bg_mobile, mMenu_name[1]);
 		this.mMenu_industry = new ResideMenuItem(this, R.drawable.bg_industry, mMenu_name[2]);
-		this.mMenu_magzine = new ResideMenuItem(this, R.drawable.bg_magzine, mMenu_name[3]);
-		this.mMenu_blog = new ResideMenuItem(this,R.drawable.bg_blog,mMenu_name[4]);
+		this.mMenu_programmer = new ResideMenuItem(this, R.drawable.bg_programmer, mMenu_name[3]);
+		this.mMenu_sw_development = new ResideMenuItem(this,R.drawable.bg_sw_development,mMenu_name[4]);
 		this.mMenu_save = new ResideMenuItem(this,R.drawable.bg_save,mMenu_name[5]);
 		this.mMenu_settings = new ResideMenuItem(this,R.drawable.bg_settings,mMenu_name[6]);
 		this.mMenu_exit = new ResideMenuItem(this,R.drawable.bg_exit,mMenu_name[7]);
 
 		this.mMenu_cloud.setOnClickListener(this);
 		this.mMenu_industry.setOnClickListener(this);
-		this.mMenu_magzine.setOnClickListener(this);
+		this.mMenu_programmer.setOnClickListener(this);
 		this.mMenu_mobile.setOnClickListener(this);
-		this.mMenu_blog.setOnClickListener(this);
+		this.mMenu_sw_development.setOnClickListener(this);
 		this.mMenu_settings.setOnClickListener(this);
 		this.mMenu_save.setOnClickListener(this);
 		this.mMenu_exit.setOnClickListener(this);
@@ -115,8 +115,8 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		mResideMenu.addMenuItem(mMenu_cloud, ResideMenu.DIRECTION_LEFT);
 		mResideMenu.addMenuItem(mMenu_mobile, ResideMenu.DIRECTION_LEFT);
 		mResideMenu.addMenuItem(mMenu_industry, ResideMenu.DIRECTION_LEFT);
-		mResideMenu.addMenuItem(mMenu_magzine, ResideMenu.DIRECTION_LEFT);
-		mResideMenu.addMenuItem(mMenu_blog, ResideMenu.DIRECTION_LEFT);
+		mResideMenu.addMenuItem(mMenu_programmer, ResideMenu.DIRECTION_LEFT);
+		mResideMenu.addMenuItem(mMenu_sw_development, ResideMenu.DIRECTION_LEFT);
 		mResideMenu.addMenuItem(mMenu_save,ResideMenu.DIRECTION_LEFT);
 		mResideMenu.addMenuItem(mMenu_settings,ResideMenu.DIRECTION_LEFT);
 		mResideMenu.addMenuItem(mMenu_exit,ResideMenu.DIRECTION_LEFT);
@@ -181,14 +181,14 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		}else if (view == mMenu_industry){
 			setActionBarTitle(mMenu_name[2]);
 			changeFragment(new IndustryFragment());
-		}else if (view == mMenu_magzine){
+		}else if (view == mMenu_programmer){
 			setActionBarTitle(mMenu_name[3]);
 			changeFragment(new MagzineFragment());
 
 		}else if (view == mMenu_mobile){
 			setActionBarTitle(mMenu_name[1]);
 			changeFragment(new MobileFragment());
-		}else if (view == mMenu_blog){
+		}else if (view == mMenu_sw_development){
 			setActionBarTitle(mMenu_name[4]);
 			changeFragment(new SoftDevFragment());
 		}else if (view == mMenu_settings){
