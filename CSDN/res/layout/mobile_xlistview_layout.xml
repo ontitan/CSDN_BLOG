@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainFragment" >
+
+    <me.maxwin.view.XListView
+        android:id="@+id/mobile_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="#00000000"
+        android:listSelector="@drawable/pressbtn" 
+        android:dividerHeight="0.1dp"
+        
+        android:divider="@color/view_divider">
+    </me.maxwin.view.XListView>
+     <com.esc.csdn.MyCircleView
+            android:id="@+id/progressfresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+</FrameLayout>
