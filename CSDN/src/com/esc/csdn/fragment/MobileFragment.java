@@ -129,7 +129,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 					mActivity.startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
 				}else{
-					Toast.makeText(getActivity(), "请打开网络...",800).show();
+					Toast.makeText(getActivity(), "请打开网络连接...",Toast.LENGTH_LONG).show();
 				}
 
 

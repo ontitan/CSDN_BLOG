@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,10 +35,10 @@ import android.widget.Toast;
 
 import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
+import com.esc.csdn.MyCircleView;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.CloudEntity;
-import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
 import com.esc.listener.AnimateFirstDisplayListener;
@@ -140,7 +139,9 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		mCloudEntityList = new MobileDao(mActivity).getSaveCLoud();
 		if (null == mCloudEntityList || mCloudEntityList.size() == 0) {
 			mCloudEntityList = new ArrayList<CloudEntity>();
-			mListView.startRefresh();
+			//mListView.startRefresh();
+			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
+			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/"});
 		}
 	}
 	private class MobileAdapter extends BaseAdapter {
@@ -241,6 +242,8 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			}else{ 
 				String isTag = "";
 				Document doc;
+				MyCircleView circleView = (MyCircleView) LayoutInflater.from(mActivity).inflate(R.layout.mobile_xlistview_layout,null).findViewById(R.id.progressfresh);
+				circleView.setVisibility(View.GONE);
 				try {
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
 
@@ -284,26 +287,12 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 						}
 						if (!isExit) {
 							try {
-								try {
-									isTag = url[1];
-								} catch (Exception e) {
-									Log.d("html",isTag);
-									if (null != isTag && "isrefresh".equals(isTag)) {
-										mCloudEntityList = dbUtils.findAll(CloudEntity.class);
-										if (null != mCloudEntityList) {
-											mCloudEntityList.add(0, cloudEntity);
-											dbUtils.delete(MobileEntity.class);
-											dbUtils.saveAll(mCloudEntityList);
-										}
-									}else {
-										dbUtils.save(cloudEntity);
-										mCloudEntityList.add(cloudEntity);
-									}
-								}
-								
+								dbUtils.save(cloudEntity);
 							} catch (DbException e) {
 								e.printStackTrace();
 							}
+							
+							mCloudEntityList.add(cloudEntity);
 						}
 					}
 				} catch (IOException e1) {
@@ -324,19 +313,17 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	}
 	@Override
 	public void onLoadMore() {
-		new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/cloud/"+currentPage++,"isloadmore"});
+		new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/cloud/"+currentPage++});
 	}
 
 	@Override
 	public void onRefresh() {
 		if (null == cache.getAsString("lastrefresh")) {
 			mListView.setRefreshTime("第一次刷新");
-			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
-			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/"});
 		}else{
 			mListView.setRefreshTime(cache.getAsString("lastrefresh"));
-			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/","isrefresh"});
 		}
+		new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/"});
 
 	}
 
