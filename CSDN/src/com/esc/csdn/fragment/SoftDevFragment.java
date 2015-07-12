@@ -142,9 +142,9 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		mSoftDevEntityList = new MobileDao(mActivity).getSaveSoftDev();
 		if (null == mSoftDevEntityList || mSoftDevEntityList.size() == 0) {
 			mSoftDevEntityList = new ArrayList<SoftDevEntity>();
-			mListView.startRefresh();
+			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
+			new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/"});
 		}
-//		mListView.startRefresh();
 	}
 
 
@@ -169,8 +169,6 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 			// TODO Auto-generated method stub
 			return position;
 		}
-
-
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ViewHolder viewHolder;
@@ -251,7 +249,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
 					//						System.out.println(contentDiv);
 					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
-					SoftDevEntity cloudEntity = null;
+					SoftDevEntity softDevEntity = null;
 					for (Element element : contents) {
 						tags.clear();
 						title = element.getElementsByTag("a").get(0).text();
@@ -269,13 +267,13 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 						for (Element element2 : tagElements) {
 							tags.add(element2.text());
 						}
-						cloudEntity = new SoftDevEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
+						softDevEntity = new SoftDevEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
 
 
 						cacheList = new MobileDao(mActivity).getSaveSoftDev();
 						if (null != cacheList && cacheList.size() > 0) {
 							for (SoftDevEntity entity : cacheList) {
-								if (entity.getTitleUrl().equals(cloudEntity.getTitleUrl())) {
+								if (entity.getTitleUrl().equals(softDevEntity.getTitleUrl())) {
 									isExit = true;
 									break;
 								} 
@@ -283,27 +281,12 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 						}
 						if (!isExit) {
 							try {
-								try {
-									isTag = url[1];
-								} catch (Exception e) {
-									Log.d("html",isTag);
-									if (null != isTag && "isrefresh".equals(isTag)) {
-										mSoftDevEntityList = dbUtils.findAll(SoftDevEntity.class);
-										if (null != mSoftDevEntityList) {
-											mSoftDevEntityList.add(0, cloudEntity);
-											dbUtils.delete(SoftDevEntity.class);
-											dbUtils.saveAll(mSoftDevEntityList);
-										}
-									}else {
-										dbUtils.save(cloudEntity);
-										mSoftDevEntityList.add(cloudEntity);
-									}
-								}
-
+								dbUtils.save(softDevEntity);
 							} catch (DbException e) {
 								e.printStackTrace();
 							}
 						}
+						mSoftDevEntityList.add(softDevEntity);
 
 					}
 				} catch (IOException e1) {
@@ -324,20 +307,17 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 	}
 	@Override
 	public void onLoadMore() {
-		new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/sd/"+currentPage++,"isloadmore"});
+		new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/sd/"+currentPage++});
 	}
 	@Override
 	public void onRefresh() {
 		if (null == cache.getAsString("SOFT")) {
 			mListView.setRefreshTime("第一次刷新");
-			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
-			new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/"});
 
 		}else{
 			mListView.setRefreshTime(cache.getAsString("lastrefresh"));
-			new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/","isrefresh"});
 		}
-
+		new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/"});
 	}
 
 	@Override
