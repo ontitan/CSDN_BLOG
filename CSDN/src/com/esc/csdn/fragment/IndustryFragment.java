@@ -2,10 +2,7 @@ package com.esc.csdn.fragment;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import me.maxwin.view.IXListViewLoadMore;
@@ -20,12 +17,10 @@ import org.netshull.csdn.R;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,7 +40,7 @@ import com.esc.csdn.MyCircleView;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.IndustryEntity;
-import com.esc.csdn.entity.MobileEntity;
+import com.esc.csdn.fragment.CloudFragment.MyAsyncTask;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
 import com.esc.listener.AnimateFirstDisplayListener;
@@ -54,16 +49,14 @@ import com.lidroid.xutils.exception.DbException;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.special.ResideMenu.ResideMenu;
 
 public class IndustryFragment extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
 	private XListView mListView = null;
 	private MobileAdapter mobileAdapter = null;
-	private List<IndustryEntity>mobile_list = new ArrayList<IndustryEntity>();
+	private List<IndustryEntity>mIndustryEntity = new ArrayList<IndustryEntity>();
 	private LayoutInflater mLayoutInflater = null;
 	private ImageLoader imageLoader = ImageLoader.getInstance();
 	private DisplayImageOptions options;
@@ -111,58 +104,60 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		.displayer(new RoundedBitmapDisplayer(20))
 		.build();
 
-		mobile_list = new ArrayList<IndustryEntity>();
+		mIndustryEntity = new ArrayList<IndustryEntity>();
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mobile_list = new ArrayList<IndustryEntity>();
+		mIndustryEntity = new ArrayList<IndustryEntity>();
 		mobileAdapter = new MobileAdapter();
 		mListView.setAdapter(mobileAdapter);
-		mListView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View view, int position,
-					long arg3) {
-				if (NetUtil.checkNet(getActivity())) {
-					Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-					intent.putExtra("url",mobile_list.get(position-1).getTitleUrl());
-					intent.putExtra("title",mobile_list.get(position-1).getTitle());
-					intent.putExtra("titleIndex",2);
-					mActivity.startActivity(intent);
-					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
-				}else{
-					Toast.makeText(getActivity(), "请打开网络连接...",Toast.LENGTH_LONG).show();
-				}
-			}
-		});
-
-		mListView.setOnLongClickListener(new OnLongClickListener() {
-
-			@Override
-			public boolean onLongClick(View position) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		});
+		mListView.setOnItemClickListener(mClickListener);
+		mListView.setOnLongClickListener(mLongClickListener);
 
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();
-		mobile_list = new MobileDao(mActivity).getSaveIndustry();
-		if (null == mobile_list || mobile_list.size() == 0) {
-			mobile_list = new ArrayList<IndustryEntity>();
+		mIndustryEntity = new MobileDao(mActivity).getSaveIndustry();
+		if (null == mIndustryEntity || mIndustryEntity.size() == 0) {
+			mIndustryEntity = new ArrayList<IndustryEntity>();
 			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
 			new MyAsyncTask().execute(new String[]{"http://news.csdn.net/"});
 		}
 	}
 
 
+	private OnItemClickListener mClickListener=new OnItemClickListener() {
 
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			// TODO Auto-generated method stub
+			if (NetUtil.checkNet(getActivity())) {
+				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
+				intent.putExtra("url",mIndustryEntity.get(position-1).getTitleUrl());
+				intent.putExtra("title",mIndustryEntity.get(position-1).getTitle());
+				intent.putExtra("titleIndex",2);
+				mActivity.startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
+			}else{
+				Toast.makeText(getActivity(), "请打开网络连接...",Toast.LENGTH_LONG).show();
+			}
+		}
+	};
+	private OnLongClickListener mLongClickListener=new OnLongClickListener() {
+		
+		@Override
+		public boolean onLongClick(View v) {
+			// TODO Auto-generated method stub
+			Toast.makeText(getActivity(), "long click!", Toast.LENGTH_LONG).show();
+			return false;
+		}
+	};
 
 	private class MobileAdapter extends BaseAdapter {
 		private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return null == mobile_list ? 0 :mobile_list.size();
+			return null == mIndustryEntity ? 0 :mIndustryEntity.size();
 		}
 
 		@Override
@@ -195,14 +190,13 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 			}else{
 				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			Log.i(TAG, "title========="+mobile_list.get(position).getTitle());
-			if (null != mobile_list && mobile_list.size() > 0) {
-				viewHolder.mTitle.setText(mobile_list.get(position).getTitle());
-				viewHolder.mContent.setText(mobile_list.get(position).getContent());
-				viewHolder.mPubTime.setText(mobile_list.get(position).getPubTime());
-				viewHolder.mReadCount.setText(mobile_list.get(position).getReadCount());
-				viewHolder.mCommentCount.setText(mobile_list.get(position).getCommentCount());
-				final String image_url = mobile_list.get(position).getPicUrl();
+			if (null != mIndustryEntity && mIndustryEntity.size() > 0) {
+				viewHolder.mTitle.setText(mIndustryEntity.get(position).getTitle());
+				viewHolder.mContent.setText(mIndustryEntity.get(position).getContent());
+				viewHolder.mPubTime.setText(mIndustryEntity.get(position).getPubTime());
+				viewHolder.mReadCount.setText(mIndustryEntity.get(position).getReadCount());
+				viewHolder.mCommentCount.setText(mIndustryEntity.get(position).getCommentCount());
+				final String image_url = mIndustryEntity.get(position).getPicUrl();
 				if (null == image_url || image_url.equals("")) {
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.GONE);
 				}else {
@@ -245,10 +239,9 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 			boolean isConnected = NetUtil.checkNet(mActivity);
 
 			if (!isConnected) {
-				mobile_list = new MobileDao(mActivity).getSaveIndustry();
+				mIndustryEntity = new MobileDao(mActivity).getSaveIndustry();
 				
 			}else{ 
-				String isTag = "";
 				Document doc;
 				MyCircleView circleView = (MyCircleView) LayoutInflater.from(mActivity).inflate(R.layout.mobile_xlistview_layout,null).findViewById(R.id.progressfresh);
 				circleView.setVisibility(View.GONE);
@@ -305,7 +298,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 								e.printStackTrace();
 							}
 						}
-						mobile_list.add(industryEntity);
+						mIndustryEntity.add(industryEntity);
 					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -326,17 +319,32 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 
 	@Override
 	public void onLoadMore() {
-		new MyAsyncTask().execute(new String[]{"http://news.csdn.net/news/"+currentPage++});
+		
+		if(NetUtil.checkNet(getActivity())){
+			new MyAsyncTask().execute(new String[]{"http://news.csdn.net/news/"+currentPage++});
+		}
+		else{
+			mListView.stopLoadMore();
+			Toast.makeText(getActivity(), "无法连接网络...", Toast.LENGTH_LONG).show();
+		}
+		
 	}
 
 	@Override
 	public void onRefresh() {
-		if (null == cache.getAsString("INDUSTRY")) {
-			mListView.setRefreshTime("第一次刷新");
-		}else{
-			mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+		if(NetUtil.checkNet(getActivity())){
+			if (null == cache.getAsString("INDUSTRY")) {
+				mListView.setRefreshTime("第一次刷新");
+			}else{
+				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+			}
+			new MyAsyncTask().execute(new String[]{"http://news.csdn.net/"});
 		}
-		new MyAsyncTask().execute(new String[]{"http://news.csdn.net/"});
+		
+		else{
+			mListView.stopRefresh();
+			Toast.makeText(getActivity(), "无法连接网络...", Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@Override
