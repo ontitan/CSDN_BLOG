@@ -38,7 +38,6 @@ import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.ProgrammerEntity;
-import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
 import com.esc.listener.AnimateFirstDisplayListener;
@@ -65,7 +64,6 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 	private int currentPage = 2;
 
 	private ACache cache = null;
-	private static final String TAG = "Mobile";
 
 	private Activity mActivity;
 
@@ -114,7 +112,6 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 			@Override
 			public void onItemClick(AdapterView<?> adapter, View view, int position,
 					long arg3) {
-				//				Log.i(TAG,mobile_list.get(position).getTitle());
 				if (NetUtil.checkNet(getActivity())) {
 					Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 					intent.putExtra("url",mProgrammerEntityList.get(position-1).getTitleUrl());
@@ -143,9 +140,9 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 		mProgrammerEntityList = new MobileDao(mActivity).getSaveProgrammer();
 		if (null == mProgrammerEntityList || mProgrammerEntityList.size() == 0) {
 			mProgrammerEntityList = new ArrayList<ProgrammerEntity>();
-			mListView.startRefresh();
+			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
+			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/"});
 		}
-		//		mListView.startRefresh();
 	}
 
 
@@ -256,7 +253,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
 					//						System.out.println(contentDiv);
 					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
-					ProgrammerEntity cloudEntity = null;
+					ProgrammerEntity programmerEntity = null;
 					for (Element element : contents) {
 						tags.clear();
 						title = element.getElementsByTag("a").get(0).text();
@@ -274,13 +271,13 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 						for (Element element2 : tagElements) {
 							tags.add(element2.text());
 						}
-						cloudEntity = new ProgrammerEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
+						programmerEntity = new ProgrammerEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
 
 
 						cacheList = new MobileDao(mActivity).getSaveProgrammer();
 						if (null != cacheList && cacheList.size() > 0) {
 							for (ProgrammerEntity entity : cacheList) {
-								if (entity.getTitleUrl().equals(cloudEntity.getTitleUrl())) {
+								if (entity.getTitleUrl().equals(programmerEntity.getTitleUrl())) {
 									isExit = true;
 									break;
 								} 
@@ -288,27 +285,12 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 						}
 						if (!isExit) {
 							try {
-								try {
-									isTag = url[1];
-								} catch (Exception e) {
-									Log.d("html",isTag);
-									if (null != isTag && "isrefresh".equals(isTag)) {
-										mProgrammerEntityList = dbUtils.findAll(ProgrammerEntity.class);
-										if (null != mProgrammerEntityList) {
-											mProgrammerEntityList.add(0, cloudEntity);
-											dbUtils.delete(MobileEntity.class);
-											dbUtils.saveAll(mProgrammerEntityList);
-										}
-									}else {
-										dbUtils.save(cloudEntity);
-										mProgrammerEntityList.add(cloudEntity);
-									}
-								}
-
+								dbUtils.save(programmerEntity);
 							} catch (DbException e) {
 								e.printStackTrace();
 							}
 						}
+						mProgrammerEntityList.add(programmerEntity);
 					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -328,20 +310,17 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 	}
 	@Override
 	public void onLoadMore() {
-		new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/programmer/"+currentPage++,"isloadmore"});
+		new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/programmer/"+currentPage++});
 	}
 
 	@Override
 	public void onRefresh() {
 		if (null == cache.getAsString("MZGZINE")) {
 			mListView.setRefreshTime("第一次刷新");
-			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
-			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/"});
 		}else{
 			mListView.setRefreshTime(cache.getAsString("lastrefresh"));
-			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/","isrefresh"});
 		}
-
+		new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/"});
 	}
 
 	@Override
