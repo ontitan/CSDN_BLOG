@@ -5,12 +5,6 @@ import java.util.List;
 import android.graphics.Bitmap;
 
 public class CloudEntity {
-
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private int id;
 	private String title;
 	private String titleUrl;
@@ -21,15 +15,12 @@ public class CloudEntity {
 	private String content;
 	private List<String>tags;
 	private Bitmap bitmap;
-	public String getTitle() {
-		return title;
+	
+	public CloudEntity() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
-
-
-
-
-
-
+	
 	public CloudEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags,Bitmap bitmap) {
@@ -43,8 +34,6 @@ public class CloudEntity {
 		this.tags = tags;
 		this.bitmap = bitmap;
 	}
-
-
 	public CloudEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags) {
@@ -57,32 +46,25 @@ public class CloudEntity {
 		this.content = content;
 		this.tags = tags;
 	}
-
-
-
-
+	public CloudEntity(String title, String titleUrl, String pubTime,
+			String readCount, String picUrl, String content) {
+		super();
+		this.title = title;
+		this.titleUrl = titleUrl;
+		this.pubTime = pubTime;
+		this.readCount = readCount;
+		this.picUrl = picUrl;
+		this.content = content;
+	}
+	public String getTitle() {
+		return title;
+	}
 	public String getTitleUrl() {
 		return titleUrl;
 	}
-
 	public void setTitleUrl(String titleUrl) {
 		this.titleUrl = titleUrl;
 	}
-
-
-
-
-
-	public CloudEntity() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-
-
-
-
-
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -130,22 +112,5 @@ public class CloudEntity {
 	public void setBitmap(Bitmap bitmap) {
 		this.bitmap = bitmap;
 	}
-
-
-
-
-
-
-	public CloudEntity(String title, String titleUrl, String pubTime,
-			String readCount, String picUrl, String content) {
-		super();
-		this.title = title;
-		this.titleUrl = titleUrl;
-		this.pubTime = pubTime;
-		this.readCount = readCount;
-		this.picUrl = picUrl;
-		this.content = content;
-	}
-
 
 }

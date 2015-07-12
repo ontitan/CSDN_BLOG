@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/bg_color">
+        <ImageView 
+		    android:id="@+id/back1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/back"
+            android:scaleType="fitCenter"
+            android:layout_centerVertical="true"
+            android:clickable="true"/>
+   	   <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/about_csdn"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"/>
+   	</RelativeLayout>
+	
+    <RelativeLayout 
+        android:id="@+id/RelativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2">
+        <FrameLayout 
+            android:id="@+id/layoutFrame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <android.support.v4.view.ViewPager
+   	            android:id="@+id/mainViewPager"
+		        android:layout_width="match_parent" 
+		        android:layout_height="wrap_content" 
+		        android:layout_gravity="center">
+	       </android.support.v4.view.ViewPager>
+	       <RelativeLayout 
+   	            android:layout_width="match_parent"
+   	            android:layout_height="wrap_content"
+   	            android:gravity="center_horizontal"
+   	            android:orientation="horizontal">
+   	            <LinearLayout 
+  	                android:id="@+id/mainLinear"
+  	                android:layout_width="match_parent"
+  	                android:layout_height="wrap_content"
+  	                android:layout_alignParentBottom="true"
+  	                android:layout_marginBottom="1dp"
+  	                android:gravity="center_horizontal"
+  	                android:orientation="horizontal">
+ 	                <ImageView 
+		       	        android:layout_width="wrap_content"
+		       	        android:layout_height="wrap_content"
+		       	        android:layout_gravity="center_vertical"
+		       	        android:padding="4dp" 
+		       	        android:scaleType="fitCenter"
+		       	        android:src="@drawable/dot"/>
+		       	    <ImageView 
+		       	        android:layout_width="wrap_content"
+		       	        android:layout_height="wrap_content"
+		       	        android:layout_gravity="center_vertical"
+		       	        android:padding="4dp" 
+		       	        android:scaleType="fitCenter"
+		       	        android:src="@drawable/dot"/>
+		       	    <ImageView 
+		       	        android:layout_width="wrap_content"
+		       	        android:layout_height="wrap_content"
+		       	        android:layout_gravity="center_vertical"
+		       	        android:padding="4dp" 
+		       	        android:scaleType="fitCenter"
+		       	        android:src="@drawable/dot"/>
+   	            </LinearLayout>
+	       	</RelativeLayout>
+        </FrameLayout>
+    </RelativeLayout>
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="@string/about_info"
+            android:textColor="@android:color/black"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/view_divider" />
+        <ListView 
+            android:id="@+id/csdn_child"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:listSelector="@drawable/pressbtn"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@color/backgroundcolor">
+        </ListView>
+    </LinearLayout>
+    
+    
+    
+    <!-- <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#ff7dd0f7"
+         >
+	<TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#ffffff"
+            android:text="about csdn"
+            android:textSize="16sp" />
+	</RelativeLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:src="@drawable/csdn_info" />
+
+    <ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_margin="5dp"
+    android:layout_weight="5" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:background="#ffeeeeef"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/about_info"
+            android:textColor="#000000" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ffffff" />
+
+        <ListView
+            android:id="@+id/csdn_child"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@color/white" >
+        </ListView>
+    </LinearLayout> -->
+    <!-- </ScrollView> -->
+</LinearLayout>

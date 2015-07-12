@@ -4,13 +4,7 @@ import java.util.List;
 
 import android.graphics.Bitmap;
 
-public class MagzineEntity {
-
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class ProgrammerEntity {
 	private int id;
 	private String title;
 	private String titleUrl;
@@ -21,16 +15,26 @@ public class MagzineEntity {
 	private String content;
 	private List<String>tags;
 	private Bitmap bitmap;
-	public String getTitle() {
-		return title;
+	
+	public ProgrammerEntity() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
 
+	public ProgrammerEntity(String title, String titleUrl, String pubTime,
+			String readCount, String picUrl, String content) {
+		super();
+		this.title = title;
+		this.titleUrl = titleUrl;
+		this.pubTime = pubTime;
+		this.readCount = readCount;
+		this.picUrl = picUrl;
+		this.content = content;
+	}
 
 
-
-
-	public MagzineEntity(String title, String titleUrl, String pubTime,
+	public ProgrammerEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags,Bitmap bitmap) {
 		this.title = title;
@@ -45,7 +49,7 @@ public class MagzineEntity {
 	}
 
 
-	public MagzineEntity(String title, String titleUrl, String pubTime,
+	public ProgrammerEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags) {
 		this.title = title;
@@ -59,7 +63,9 @@ public class MagzineEntity {
 	}
 
 
-
+	public String getTitle() {
+		return title;
+	}
 
 	public String getTitleUrl() {
 		return titleUrl;
@@ -68,20 +74,6 @@ public class MagzineEntity {
 	public void setTitleUrl(String titleUrl) {
 		this.titleUrl = titleUrl;
 	}
-
-
-
-
-
-	public MagzineEntity() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-
-
-
-
 
 	public void setTitle(String title) {
 		this.title = title;
@@ -130,22 +122,5 @@ public class MagzineEntity {
 	public void setBitmap(Bitmap bitmap) {
 		this.bitmap = bitmap;
 	}
-
-
-
-
-
-
-	public MagzineEntity(String title, String titleUrl, String pubTime,
-			String readCount, String picUrl, String content) {
-		super();
-		this.title = title;
-		this.titleUrl = titleUrl;
-		this.pubTime = pubTime;
-		this.readCount = readCount;
-		this.picUrl = picUrl;
-		this.content = content;
-	}
-
 
 }

@@ -21,6 +21,18 @@ Thumbs.db
 *.log
 [Bb]in
 [Dd]ebug*/
+anim*/
+drawable-hdpi*/
+drawable-ldpi*/
+drawable-mdpi*/
+drawable-xhdpi*/
+drawable-xxhdpi*/
+menu*/
+values*/
+values-sw600dp*/
+values-sw720dp-land*/
+values-v11*/
+values-v14*/
 ResideMenu*/
 SwipeMenuListView*/
 XListView*/
@@ -30,7 +42,6 @@ drawable-mdpi*/
 drawable-xhdpi*/
 drawable-xxhdpi*/
 libs
-res*/
 *.lib
 *.sbr
 obj/

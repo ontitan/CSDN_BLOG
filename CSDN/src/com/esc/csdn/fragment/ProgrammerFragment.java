@@ -1,10 +1,7 @@
 package com.esc.csdn.fragment;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import me.maxwin.view.IXListViewLoadMore;
@@ -19,8 +16,6 @@ import org.netshull.csdn.R;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -42,34 +37,30 @@ import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
-import com.esc.csdn.entity.CloudEntity;
-import com.esc.csdn.entity.MagzineEntity;
+import com.esc.csdn.entity.ProgrammerEntity;
 import com.esc.csdn.entity.MobileEntity;
-import com.esc.csdn.entity.SoftDevEntity;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
+import com.esc.listener.AnimateFirstDisplayListener;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.special.ResideMenu.ResideMenu;
 
-public class MagzineFragment  extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
+public class ProgrammerFragment  extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
 
 	private XListView mListView = null;
 	private MobileAdapter mobileAdapter = null;
-	private List<MagzineEntity>mobile_list = new ArrayList<MagzineEntity>();
+	private List<ProgrammerEntity>mProgrammerEntityList = new ArrayList<ProgrammerEntity>();
 	private LayoutInflater mLayoutInflater = null;
 	private ImageLoader imageLoader = ImageLoader.getInstance();
 	private DisplayImageOptions options;
 
 	private DbUtils dbUtils = null;
-
 
 	private int currentPage = 2;
 
@@ -83,7 +74,6 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		parentView = inflater.inflate(R.layout.mobile_xlistview_layout, container, false);
 		ResideMenu resideMenu = ((MainFrame)getActivity()).getResideMenu();
-		((ViewGroup)(getActivity().findViewById(android.R.id.content))).getChildAt(0).setBackgroundColor(Color.parseColor("#121111"));
 		resideMenu.addIgnoredView(parentView);
 		mActivity = getActivity();
 		mLayoutView = parentView;
@@ -102,21 +92,19 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 		dbUtils = DbUtils.create(mActivity);
 
 		options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_stub1)
+		.showImageOnLoading(R.drawable.ic_on_loading)
 		.showImageForEmptyUri(R.drawable.ic_empty)
 		.showImageOnFail(R.drawable.ic_error)
 		.cacheInMemory(true)
 		.cacheOnDisk(true)
 		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(20))
+		.displayer(new RoundedBitmapDisplayer(10))
 		.build();
 
-		mobile_list = new ArrayList<MagzineEntity>();
-		//		Log.i(TAG, mLayoutView == null ? "mlayout is null" : "not null");
+		mProgrammerEntityList = new ArrayList<ProgrammerEntity>();
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mobile_list = new ArrayList<MagzineEntity>();
+		mProgrammerEntityList = new ArrayList<ProgrammerEntity>();
 		mobileAdapter = new MobileAdapter();
-		//		Log.i(TAG, mListView == null ? "mListView is null" : " mListView not null");
 
 		mListView.setAdapter(mobileAdapter);
 
@@ -129,9 +117,9 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 				//				Log.i(TAG,mobile_list.get(position).getTitle());
 				if (NetUtil.checkNet(getActivity())) {
 					Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-					intent.putExtra("url",mobile_list.get(position-1).getTitleUrl());
-					intent.putExtra("title",mobile_list.get(position-1).getTitle());
-					intent.putExtra("titleIndex",1);
+					intent.putExtra("url",mProgrammerEntityList.get(position-1).getTitleUrl());
+					intent.putExtra("title",mProgrammerEntityList.get(position-1).getTitle());
+					intent.putExtra("titleIndex",3);
 					mActivity.startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
 				}else{
@@ -152,9 +140,9 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();
-		mobile_list = new MobileDao(mActivity).getSaveMagzine();
-		if (null == mobile_list || mobile_list.size() == 0) {
-			mobile_list = new ArrayList<MagzineEntity>();
+		mProgrammerEntityList = new MobileDao(mActivity).getSaveProgrammer();
+		if (null == mProgrammerEntityList || mProgrammerEntityList.size() == 0) {
+			mProgrammerEntityList = new ArrayList<ProgrammerEntity>();
 			mListView.startRefresh();
 		}
 		//		mListView.startRefresh();
@@ -164,14 +152,11 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 
 
 	private class MobileAdapter extends BaseAdapter {
-		InputStream inputStream = null;
-		Bitmap bitmap = null;
-		String image_url = "";
 		private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return null == mobile_list ? 0 :mobile_list.size();
+			return null == mProgrammerEntityList ? 0 :mProgrammerEntityList.size();
 		}
 
 		@Override
@@ -190,11 +175,6 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ViewHolder viewHolder;
-			TextView mTitle;
-			ImageView mImage;
-			TextView mContent;
-			TextView mPubTime;
-			TextView mReadCount;
 			if (null == convertView) {
 				convertView = mLayoutInflater.inflate(R.layout.mobile_xlistview_item,parent,false);
 				viewHolder = new ViewHolder();
@@ -208,14 +188,13 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 			}else{
 				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			Log.i(TAG, "title========="+mobile_list.get(position).getTitle());
-			if (null != mobile_list && mobile_list.size() > 0) {
-				viewHolder.mTitle.setText(mobile_list.get(position).getTitle());
-				viewHolder.mContent.setText(mobile_list.get(position).getContent());
-				viewHolder.mPubTime.setText(mobile_list.get(position).getPubTime());
-				viewHolder.mReadCount.setText(mobile_list.get(position).getReadCount());
-				viewHolder.mCommentCount.setText(mobile_list.get(position).getCommentCount());
-				final String image_url = mobile_list.get(position).getPicUrl();
+			if (null != mProgrammerEntityList && mProgrammerEntityList.size() > 0) {
+				viewHolder.mTitle.setText(mProgrammerEntityList.get(position).getTitle());
+				viewHolder.mContent.setText(mProgrammerEntityList.get(position).getContent());
+				viewHolder.mPubTime.setText(mProgrammerEntityList.get(position).getPubTime());
+				viewHolder.mReadCount.setText(mProgrammerEntityList.get(position).getReadCount());
+				viewHolder.mCommentCount.setText(mProgrammerEntityList.get(position).getCommentCount());
+				final String image_url = mProgrammerEntityList.get(position).getPicUrl();
 				if (null == image_url || image_url.equals("")) {
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.GONE);
 				}else {
@@ -250,7 +229,7 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 	}
 
 	class MyAsyncTask extends AsyncTask<String,Integer,Void> {
-		private List<MagzineEntity>cacheList = null;
+		private List<ProgrammerEntity>cacheList = null;
 		boolean isExit = false;
 		@Override
 		protected Void doInBackground(String... url){
@@ -259,18 +238,12 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 
 			if (!isConnected) {
 				Log.d("test","the net work is "+isConnected);
-				mobile_list = new MobileDao(mActivity).getSaveMagzine();
-				//				for (MobileEntity eti : mobile_list) {
-				//					Log.d("test",eti.getTitle());
-				//				}
+				mProgrammerEntityList = new MobileDao(mActivity).getSaveProgrammer();
 			}else{ 
 				String isTag = "";
 				Document doc;
 				try {
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
-
-					Element leftDiv = doc.getElementsByAttributeValue("id","ddimagetabs").get(0);
-					//		System.out.println(leftDivs);
 
 					String title = "";
 					String titleUrl = "";
@@ -283,7 +256,7 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
 					//						System.out.println(contentDiv);
 					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
-					MagzineEntity cloudEntity = null;
+					ProgrammerEntity cloudEntity = null;
 					for (Element element : contents) {
 						tags.clear();
 						title = element.getElementsByTag("a").get(0).text();
@@ -301,12 +274,12 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 						for (Element element2 : tagElements) {
 							tags.add(element2.text());
 						}
-						cloudEntity = new MagzineEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
+						cloudEntity = new ProgrammerEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
 
 
-						cacheList = new MobileDao(mActivity).getSaveMagzine();
+						cacheList = new MobileDao(mActivity).getSaveProgrammer();
 						if (null != cacheList && cacheList.size() > 0) {
-							for (MagzineEntity entity : cacheList) {
+							for (ProgrammerEntity entity : cacheList) {
 								if (entity.getTitleUrl().equals(cloudEntity.getTitleUrl())) {
 									isExit = true;
 									break;
@@ -320,15 +293,15 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 								} catch (Exception e) {
 									Log.d("html",isTag);
 									if (null != isTag && "isrefresh".equals(isTag)) {
-										mobile_list = dbUtils.findAll(MagzineEntity.class);
-										if (null != mobile_list) {
-											mobile_list.add(0, cloudEntity);
+										mProgrammerEntityList = dbUtils.findAll(ProgrammerEntity.class);
+										if (null != mProgrammerEntityList) {
+											mProgrammerEntityList.add(0, cloudEntity);
 											dbUtils.delete(MobileEntity.class);
-											dbUtils.saveAll(mobile_list);
+											dbUtils.saveAll(mProgrammerEntityList);
 										}
 									}else {
 										dbUtils.save(cloudEntity);
-										mobile_list.add(cloudEntity);
+										mProgrammerEntityList.add(cloudEntity);
 									}
 								}
 
@@ -353,28 +326,6 @@ public class MagzineFragment  extends Fragment implements IXListViewRefreshListe
 			super.onPostExecute(result);
 		}
 	}
-
-
-
-	private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
-
-		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
-
-		@Override
-		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-			if (loadedImage != null) {
-				ImageView imageView = (ImageView) view;
-				boolean firstDisplay = !displayedImages.contains(imageUri);
-				if (firstDisplay) {
-					FadeInBitmapDisplayer.animate(imageView, 200);
-					displayedImages.add(imageUri);
-				}
-			}
-		}
-	}
-
-
-
 	@Override
 	public void onLoadMore() {
 		new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/programmer/"+currentPage++,"isloadmore"});

@@ -22,15 +22,11 @@ public class MobileEntity implements Serializable{
 	private String content;
 	private List<String>tags;
 	private Bitmap bitmap;
-	public String getTitle() {
-		return title;
-	}
-
-
 	
-
-
-
+	public MobileEntity() {
+	}
+	
+	
 	public MobileEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags,Bitmap bitmap) {
@@ -45,7 +41,16 @@ public class MobileEntity implements Serializable{
 		this.bitmap = bitmap;
 	}
 
-
+	public MobileEntity(String title, String titleUrl, String pubTime,
+			String readCount, String picUrl, String content) {
+		super();
+		this.title = title;
+		this.titleUrl = titleUrl;
+		this.pubTime = pubTime;
+		this.readCount = readCount;
+		this.picUrl = picUrl;
+		this.content = content;
+	}
 	public MobileEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags) {
@@ -59,8 +64,9 @@ public class MobileEntity implements Serializable{
 		this.tags = tags;
 	}
 
-
-
+	public String getTitle() {
+		return title;
+	}
 
 	public String getTitleUrl() {
 		return titleUrl;
@@ -69,14 +75,6 @@ public class MobileEntity implements Serializable{
 	public void setTitleUrl(String titleUrl) {
 		this.titleUrl = titleUrl;
 	}
-
-
-
-
-
-	public MobileEntity() {
-	}
-
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -124,23 +122,5 @@ public class MobileEntity implements Serializable{
 	public void setBitmap(Bitmap bitmap) {
 		this.bitmap = bitmap;
 	}
-
-
-
-
-
-
-	public MobileEntity(String title, String titleUrl, String pubTime,
-			String readCount, String picUrl, String content) {
-		super();
-		this.title = title;
-		this.titleUrl = titleUrl;
-		this.pubTime = pubTime;
-		this.readCount = readCount;
-		this.picUrl = picUrl;
-		this.content = content;
-	}
-
-	
 
 }

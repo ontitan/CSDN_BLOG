@@ -43,12 +43,11 @@ import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
-import com.esc.csdn.entity.CloudEntity;
 import com.esc.csdn.entity.IndustryEntity;
-import com.esc.csdn.entity.MagzineEntity;
 import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
+import com.esc.listener.AnimateFirstDisplayListener;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -102,7 +101,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		dbUtils = DbUtils.create(mActivity);
 
 		options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_stub1)
+		.showImageOnLoading(R.drawable.ic_on_loading)
 		.showImageForEmptyUri(R.drawable.ic_empty)
 		.showImageOnFail(R.drawable.ic_error)
 		.cacheInMemory(true)
@@ -131,7 +130,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 					Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 					intent.putExtra("url",mobile_list.get(position-1).getTitleUrl());
 					intent.putExtra("title",mobile_list.get(position-1).getTitle());
-					intent.putExtra("titleIndex",1);
+					intent.putExtra("titleIndex",2);
 					mActivity.startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
 				}else{
@@ -164,9 +163,6 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 
 
 	private class MobileAdapter extends BaseAdapter {
-		InputStream inputStream = null;
-		Bitmap bitmap = null;
-		String image_url = "";
 		private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 		@Override
 		public int getCount() {
@@ -190,11 +186,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ViewHolder viewHolder;
-			TextView mTitle;
-			ImageView mImage;
-			TextView mContent;
-			TextView mPubTime;
-			TextView mReadCount;
+			
 			if (null == convertView) {
 				convertView = mLayoutInflater.inflate(R.layout.mobile_xlistview_item,parent,false);
 				viewHolder = new ViewHolder();
@@ -260,9 +252,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 			if (!isConnected) {
 				Log.d("test","the net work is "+isConnected);
 				mobile_list = new MobileDao(mActivity).getSaveIndustry();
-				//				for (MobileEntity eti : mobile_list) {
-				//					Log.d("test",eti.getTitle());
-				//				}
+				
 			}else{ 
 				String isTag = "";
 				Document doc;
@@ -270,7 +260,6 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
 
 					Element leftDiv = doc.getElementsByAttributeValue("id","ddimagetabs").get(0);
-					//		System.out.println(leftDivs);
 
 					String title = "";
 					String titleUrl = "";
@@ -297,10 +286,6 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 							picUrl = "";
 						}
 						content = element.getElementsByTag("dd").get(0).text();
-						//					Log.i(TAG, "content length is :"+content.length());
-						//					if (content.length() > 100) {
-						//						content = content.substring(0, 50) + "...";
-						//					}
 						Elements tagElements = element.getElementsByAttributeValue("class","tag").get(0).getElementsByTag("a");
 						for (Element element2 : tagElements) {
 							tags.add(element2.text());
@@ -357,27 +342,6 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 			super.onPostExecute(result);
 		}
 	}
-
-
-
-	private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
-
-		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
-
-		@Override
-		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-			if (loadedImage != null) {
-				ImageView imageView = (ImageView) view;
-				boolean firstDisplay = !displayedImages.contains(imageUri);
-				if (firstDisplay) {
-					FadeInBitmapDisplayer.animate(imageView, 200);
-					displayedImages.add(imageUri);
-				}
-			}
-		}
-	}
-
-
 
 	@Override
 	public void onLoadMore() {

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.esc.csdn.entity.CloudEntity;
 import com.esc.csdn.entity.IndustryEntity;
-import com.esc.csdn.entity.MagzineEntity;
+import com.esc.csdn.entity.ProgrammerEntity;
 import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.entity.SoftDevEntity;
 import com.lidroid.xutils.DbUtils;
@@ -25,7 +25,7 @@ public class MobileDao {
 	private  List<MobileEntity>list1 = new ArrayList<MobileEntity>();
 	private  List<CloudEntity>list2 = new ArrayList<CloudEntity>();
 	private  List<IndustryEntity>list3 = new ArrayList<IndustryEntity>();
-	private  List<MagzineEntity>list4 = new ArrayList<MagzineEntity>();
+	private  List<ProgrammerEntity>list4 = new ArrayList<ProgrammerEntity>();
 	private  List<SoftDevEntity>list5 = new ArrayList<SoftDevEntity>();
 //	private  List<MobileEntity>list6 = new ArrayList<MobileEntity>();
 //	private  List<MobileEntity>list7 = new ArrayList<MobileEntity>();
@@ -79,9 +79,9 @@ public class MobileDao {
 	}
 	
 	
-	public List<MagzineEntity>getSaveMagzine() {
+	public List<ProgrammerEntity>getSaveProgrammer() {
 		try {
-			list4 = dbUtils.findAll(MagzineEntity.class);
+			list4 = dbUtils.findAll(ProgrammerEntity.class);
 		} catch (DbException e) {
 			e.printStackTrace();
 		}

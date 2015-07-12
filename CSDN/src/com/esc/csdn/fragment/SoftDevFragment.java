@@ -2,10 +2,7 @@ package com.esc.csdn.fragment;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import me.maxwin.view.IXListViewLoadMore;
@@ -43,27 +40,23 @@ import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
-import com.esc.csdn.entity.CloudEntity;
-import com.esc.csdn.entity.MagzineEntity;
-import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.entity.SoftDevEntity;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
+import com.esc.listener.AnimateFirstDisplayListener;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.special.ResideMenu.ResideMenu;
 
 public class SoftDevFragment extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
 	private XListView mListView = null;
 	private MobileAdapter mobileAdapter = null;
-	private List<SoftDevEntity>mobile_list = new ArrayList<SoftDevEntity>();
+	private List<SoftDevEntity>mSoftDevEntityList = new ArrayList<SoftDevEntity>();
 	private LayoutInflater mLayoutInflater = null;
 	private ImageLoader imageLoader = ImageLoader.getInstance();
 	private DisplayImageOptions options;
@@ -103,22 +96,19 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		dbUtils = DbUtils.create(mActivity);
 
 		options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_stub1)
+		.showImageOnLoading(R.drawable.ic_on_loading)
 		.showImageForEmptyUri(R.drawable.ic_empty)
 		.showImageOnFail(R.drawable.ic_error)
 		.cacheInMemory(true)
 		.cacheOnDisk(true)
 		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(20))
+		.displayer(new RoundedBitmapDisplayer(10))
 		.build();
 		
-		mobile_list = new ArrayList<SoftDevEntity>();
-		//		Log.i(TAG, mLayoutView == null ? "mlayout is null" : "not null");
+		mSoftDevEntityList = new ArrayList<SoftDevEntity>();
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mobile_list = new ArrayList<SoftDevEntity>();
+		mSoftDevEntityList = new ArrayList<SoftDevEntity>();
 		mobileAdapter = new MobileAdapter();
-		//		Log.i(TAG, mListView == null ? "mListView is null" : " mListView not null");
-
 		mListView.setAdapter(mobileAdapter);
 
 
@@ -129,8 +119,8 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 					long arg3) {
 				//				Log.i(TAG,mobile_list.get(position).getTitle());
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-				intent.putExtra("url",mobile_list.get(position-1).getTitleUrl());
-				intent.putExtra("title",mobile_list.get(position-1).getTitle());
+				intent.putExtra("url",mSoftDevEntityList.get(position-1).getTitleUrl());
+				intent.putExtra("title",mSoftDevEntityList.get(position-1).getTitle());
 				intent.putExtra("titleIndex",4);
 				mActivity.startActivity(intent);
 				getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
@@ -149,9 +139,9 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();
-		mobile_list = new MobileDao(mActivity).getSaveSoftDev();
-		if (null == mobile_list || mobile_list.size() == 0) {
-			mobile_list = new ArrayList<SoftDevEntity>();
+		mSoftDevEntityList = new MobileDao(mActivity).getSaveSoftDev();
+		if (null == mSoftDevEntityList || mSoftDevEntityList.size() == 0) {
+			mSoftDevEntityList = new ArrayList<SoftDevEntity>();
 			mListView.startRefresh();
 		}
 //		mListView.startRefresh();
@@ -161,14 +151,11 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 
 
 	private class MobileAdapter extends BaseAdapter {
-		InputStream inputStream = null;
-		Bitmap bitmap = null;
-		String image_url = "";
 		private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return null == mobile_list ? 0 :mobile_list.size();
+			return null == mSoftDevEntityList ? 0 :mSoftDevEntityList.size();
 		}
 
 		@Override
@@ -187,11 +174,6 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ViewHolder viewHolder;
-			TextView mTitle;
-			ImageView mImage;
-			TextView mContent;
-			TextView mPubTime;
-			TextView mReadCount;
 			if (null == convertView) {
 				convertView = mLayoutInflater.inflate(R.layout.mobile_xlistview_item,parent,false);
 				viewHolder = new ViewHolder();
@@ -204,13 +186,12 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 			}else{
 				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			Log.i(TAG, "title========="+mobile_list.get(position).getTitle());
-			if (null != mobile_list && mobile_list.size() > 0) {
-				viewHolder.mTitle.setText(mobile_list.get(position).getTitle());
-				viewHolder.mContent.setText(mobile_list.get(position).getContent());
-				viewHolder.mPubTime.setText(mobile_list.get(position).getPubTime());
-				viewHolder.mReadCount.setText(mobile_list.get(position).getReadCount());
-				final String image_url = mobile_list.get(position).getPicUrl();
+			if (null != mSoftDevEntityList && mSoftDevEntityList.size() > 0) {
+				viewHolder.mTitle.setText(mSoftDevEntityList.get(position).getTitle());
+				viewHolder.mContent.setText(mSoftDevEntityList.get(position).getContent());
+				viewHolder.mPubTime.setText(mSoftDevEntityList.get(position).getPubTime());
+				viewHolder.mReadCount.setText(mSoftDevEntityList.get(position).getReadCount());
+				final String image_url = mSoftDevEntityList.get(position).getPicUrl();
 				if (null == image_url || image_url.equals("")) {
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.GONE);
 				}else {
@@ -252,19 +233,12 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 			boolean isConnected = NetUtil.checkNet(mActivity);
 
 			if (!isConnected) {
-				Log.d("test","the net work is "+isConnected);
-				mobile_list = new MobileDao(mActivity).getSaveSoftDev();
-				//				for (MobileEntity eti : mobile_list) {
-				//					Log.d("test",eti.getTitle());
-				//				}
+				mSoftDevEntityList = new MobileDao(mActivity).getSaveSoftDev();
 			}else{ 
 				String isTag = "";
 				Document doc;
 				try {
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
-
-					Element leftDiv = doc.getElementsByAttributeValue("id","ddimagetabs").get(0);
-					//		System.out.println(leftDivs);
 
 					String title = "";
 					String titleUrl = "";
@@ -291,10 +265,6 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 							picUrl = "";
 						}
 						content = element.getElementsByTag("dd").get(0).text();
-						//					Log.i(TAG, "content length is :"+content.length());
-						//					if (content.length() > 100) {
-						//						content = content.substring(0, 50) + "...";
-						//					}
 						Elements tagElements = element.getElementsByAttributeValue("class","tag").get(0).getElementsByTag("a");
 						for (Element element2 : tagElements) {
 							tags.add(element2.text());
@@ -318,15 +288,15 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 								} catch (Exception e) {
 									Log.d("html",isTag);
 									if (null != isTag && "isrefresh".equals(isTag)) {
-										mobile_list = dbUtils.findAll(SoftDevEntity.class);
-										if (null != mobile_list) {
-											mobile_list.add(0, cloudEntity);
+										mSoftDevEntityList = dbUtils.findAll(SoftDevEntity.class);
+										if (null != mSoftDevEntityList) {
+											mSoftDevEntityList.add(0, cloudEntity);
 											dbUtils.delete(SoftDevEntity.class);
-											dbUtils.saveAll(mobile_list);
+											dbUtils.saveAll(mSoftDevEntityList);
 										}
 									}else {
 										dbUtils.save(cloudEntity);
-										mobile_list.add(cloudEntity);
+										mSoftDevEntityList.add(cloudEntity);
 									}
 								}
 
@@ -352,28 +322,6 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 			super.onPostExecute(result);
 		}
 	}
-
-
-
-	private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
-
-		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
-
-		@Override
-		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-			if (loadedImage != null) {
-				ImageView imageView = (ImageView) view;
-				boolean firstDisplay = !displayedImages.contains(imageUri);
-				if (firstDisplay) {
-					FadeInBitmapDisplayer.animate(imageView, 200);
-					displayedImages.add(imageUri);
-				}
-			}
-		}
-	}
-
-
-
 	@Override
 	public void onLoadMore() {
 		new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/sd/"+currentPage++,"isloadmore"});
