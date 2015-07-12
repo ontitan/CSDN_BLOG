@@ -38,6 +38,7 @@ import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.ProgrammerEntity;
+import com.esc.csdn.fragment.MobileFragment.MyAsyncTask;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
 import com.esc.listener.AnimateFirstDisplayListener;
@@ -89,50 +90,26 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 		imageLoader.init(ImageLoaderConfiguration.createDefault(mActivity));
 		dbUtils = DbUtils.create(mActivity);
 
-		options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_on_loading)
-		.showImageForEmptyUri(R.drawable.ic_empty)
-		.showImageOnFail(R.drawable.ic_error)
-		.cacheInMemory(true)
-		.cacheOnDisk(true)
-		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(10))
-		.build();
+		options=new DisplayImageOptions.Builder()
+					.showImageOnLoading(R.drawable.ic_on_loading)
+					.showImageForEmptyUri(R.drawable.ic_empty)
+					.showImageOnFail(R.drawable.ic_error)
+					.cacheInMemory(true)
+					.cacheOnDisk(true)
+					.considerExifParams(true)
+					.displayer(new RoundedBitmapDisplayer(10))
+					.build();
 
 		mProgrammerEntityList = new ArrayList<ProgrammerEntity>();
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mProgrammerEntityList = new ArrayList<ProgrammerEntity>();
 		mobileAdapter = new MobileAdapter();
 
 		mListView.setAdapter(mobileAdapter);
 
 
-		mListView.setOnItemClickListener(new OnItemClickListener() {
+		mListView.setOnItemClickListener(mClickListener);
 
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View view, int position,
-					long arg3) {
-				if (NetUtil.checkNet(getActivity())) {
-					Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-					intent.putExtra("url",mProgrammerEntityList.get(position-1).getTitleUrl());
-					intent.putExtra("title",mProgrammerEntityList.get(position-1).getTitle());
-					intent.putExtra("titleIndex",3);
-					mActivity.startActivity(intent);
-					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
-				}else{
-					Toast.makeText(getActivity(), "请打开网络...",800).show();
-				}
-			}
-		});
-
-		mListView.setOnLongClickListener(new OnLongClickListener() {
-
-			@Override
-			public boolean onLongClick(View position) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		});
+		mListView.setOnLongClickListener(mLongClickListener);
 
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
@@ -145,7 +122,33 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 		}
 	}
 
+	private OnItemClickListener mClickListener=new OnItemClickListener() {
 
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			// TODO Auto-generated method stub
+			if (NetUtil.checkNet(getActivity())) {
+				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
+				intent.putExtra("url",mProgrammerEntityList.get(position-1).getTitleUrl());
+				intent.putExtra("title",mProgrammerEntityList.get(position-1).getTitle());
+				intent.putExtra("titleIndex",3);
+				mActivity.startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
+			}else{
+				Toast.makeText(getActivity(), "请打开网络连接...",Toast.LENGTH_LONG).show();
+			}
+		}
+	};
+	private OnLongClickListener mLongClickListener=new OnLongClickListener() {
+		
+		@Override
+		public boolean onLongClick(View v) {
+			// TODO Auto-generated method stub
+			Toast.makeText(getActivity(), "long click!", Toast.LENGTH_LONG).show();
+			return false;
+		}
+	};
 
 
 	private class MobileAdapter extends BaseAdapter {
@@ -198,7 +201,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.VISIBLE);
 				}
 
-				ImageLoader.getInstance().displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
+				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
 				if (!NetUtil.checkNet(mActivity)) {
@@ -310,17 +313,32 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 	}
 	@Override
 	public void onLoadMore() {
-		new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/programmer/"+currentPage++});
+		
+		if(NetUtil.checkNet(getActivity())){
+			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/programmer/"+currentPage++});
+		}
+		else{
+			mListView.stopLoadMore();
+			Toast.makeText(getActivity(), "无法连接网络...", Toast.LENGTH_LONG).show();
+		}
+		
 	}
 
 	@Override
 	public void onRefresh() {
-		if (null == cache.getAsString("MZGZINE")) {
-			mListView.setRefreshTime("第一次刷新");
-		}else{
-			mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+		
+		if(NetUtil.checkNet(getActivity())){
+			if (null == cache.getAsString("PROGRAMMER")) {
+				mListView.setRefreshTime("第一次刷新");
+			}else{
+				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+			}
+			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/"});
 		}
-		new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/"});
+		else{
+			mListView.stopRefresh();
+			Toast.makeText(getActivity(), "无法连接网络...", Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@Override
