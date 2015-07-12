@@ -3,8 +3,6 @@ package com.esc.csdn.fragment;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import me.maxwin.view.IXListViewLoadMore;
@@ -45,15 +43,14 @@ import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.SoftDevEntity;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
+import com.esc.listener.AnimateFirstDisplayListener;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.special.ResideMenu.ResideMenu;
 
 public class SoftDevFragment extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
@@ -243,7 +240,6 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 				try {
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
 
-					Element leftDiv = doc.getElementsByAttributeValue("id","ddimagetabs").get(0);
 					String title = "";
 					String titleUrl = "";
 					String pubTime = "";
@@ -326,28 +322,6 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 			super.onPostExecute(result);
 		}
 	}
-
-
-
-	private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
-
-		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
-
-		@Override
-		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-			if (loadedImage != null) {
-				ImageView imageView = (ImageView) view;
-				boolean firstDisplay = !displayedImages.contains(imageUri);
-				if (firstDisplay) {
-					FadeInBitmapDisplayer.animate(imageView, 200);
-					displayedImages.add(imageUri);
-				}
-			}
-		}
-	}
-
-
-
 	@Override
 	public void onLoadMore() {
 		new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/sd/"+currentPage++,"isloadmore"});

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:liu="http://schemas.android.com/apk/res/org.netshull.csdn"
+    android:id="@+id/mobile_setting_id"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white" >
+    
+    
+    
+	<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical" >
+
+        <ListView 
+            android:id="@+id/settingsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:listSelector="@drawable/pressbtn"
+            android:divider="@color/view_divider"
+            android:dividerHeight="0.1dp"
+            android:cacheColorHint="@color/colorhint">
+   	   </ListView>
+   	   <View 
+   	       android:layout_width="match_parent"
+   	       android:layout_height="0.1dp"
+   	       android:layout_marginLeft="10dp"
+   	       android:layout_marginRight="10dp"
+   	       android:background="@color/view_divider"/>
+   	   <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/yao_crop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:clickable="false"
+                android:textColor="@android:color/black"
+                android:padding="10dp"
+                android:layout_marginLeft="8dp"
+                android:text="@string/move_phone"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:padding="5dp" >
+
+                <ToggleButton
+                    android:id="@+id/toogleButton_id"
+                    android:layout_width="70dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="3dp"
+                    android:textSize="0sp"
+                    android:background="@drawable/toogle_selector">
+                </ToggleButton>
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+    <com.esc.csdn.CirclePro
+        android:id="@+id/clear_data_pro"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+       	android:visibility="gone"
+        liu:circlecolor="@color/bg_color"
+        liu:half="80dp" />
+</FrameLayout>

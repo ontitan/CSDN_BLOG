@@ -1,11 +1,7 @@
 package com.esc.csdn.fragment;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import me.maxwin.view.IXListViewLoadMore;
@@ -20,9 +16,7 @@ import org.netshull.csdn.R;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -33,11 +27,9 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,18 +42,15 @@ import com.esc.csdn.MyCircleView;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.utils.NetUtil;
-import com.esc.csdn.utils.ScreenShot;
 import com.esc.csdn.utils.TimeUtils;
+import com.esc.listener.AnimateFirstDisplayListener;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.special.ResideMenu.ResideMenu;
 
 public class MobileFragment extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
@@ -172,9 +161,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 
 
 	private class MobileAdapter extends BaseAdapter {
-		InputStream inputStream = null;
-		Bitmap bitmap = null;
-		String image_url = "";
+		
 		private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 		@Override
 		public int getCount() {
@@ -341,28 +328,6 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 			super.onPostExecute(result);
 		}
 	}
-
-
-
-	private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
-
-		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
-
-		@Override
-		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-			if (loadedImage != null) {
-				ImageView imageView = (ImageView) view;
-				boolean firstDisplay = !displayedImages.contains(imageUri);
-				if (firstDisplay) {
-					FadeInBitmapDisplayer.animate(imageView, 200);
-					displayedImages.add(imageUri);
-				}
-			}
-		}
-	}
-
-
-
 	@Override
 	public void onLoadMore() {
 		new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/mobile/"+currentPage++});

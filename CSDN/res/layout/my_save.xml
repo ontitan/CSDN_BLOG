@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.baoyz.swipemenulistview.SwipeMenuListView
+        android:id="@+id/my_save_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        android:listSelector="@drawable/pressbtn"
+        android:dividerHeight="0.1dp"
+        android:divider="@color/view_divider"/>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:id="@+id/no_save_show"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/no_save_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:src="@drawable/nodata"
+            android:layout_centerInParent="true"
+             />
+        <TextView 
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/bg_color"
+            android:layout_below="@+id/no_save_image"
+            android:layout_centerHorizontal="true"
+            android:text="@string/no_data_text"/>
+        
+    </RelativeLayout>
+
+</FrameLayout>

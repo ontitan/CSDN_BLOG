@@ -47,6 +47,7 @@ import com.esc.csdn.entity.IndustryEntity;
 import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
+import com.esc.listener.AnimateFirstDisplayListener;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -61,7 +62,7 @@ import com.special.ResideMenu.ResideMenu;
 public class IndustryFragment extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
 	private XListView mListView = null;
 	private MobileAdapter mobileAdapter = null;
-	private List<IndustryEntity>mIndustryEntityList = new ArrayList<IndustryEntity>();
+	private List<IndustryEntity>mobile_list = new ArrayList<IndustryEntity>();
 	private LayoutInflater mLayoutInflater = null;
 	private ImageLoader imageLoader = ImageLoader.getInstance();
 	private DisplayImageOptions options;
@@ -106,13 +107,15 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		.cacheInMemory(true)
 		.cacheOnDisk(true)
 		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(10))
+		.displayer(new RoundedBitmapDisplayer(20))
 		.build();
 
-		mIndustryEntityList = new ArrayList<IndustryEntity>();
+		mobile_list = new ArrayList<IndustryEntity>();
+		//		Log.i(TAG, mLayoutView == null ? "mlayout is null" : "not null");
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mIndustryEntityList = new ArrayList<IndustryEntity>();
+		mobile_list = new ArrayList<IndustryEntity>();
 		mobileAdapter = new MobileAdapter();
+		//		Log.i(TAG, mListView == null ? "mListView is null" : " mListView not null");
 
 		mListView.setAdapter(mobileAdapter);
 
@@ -125,9 +128,9 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 				//				Log.i(TAG,mobile_list.get(position).getTitle());
 				if (NetUtil.checkNet(getActivity())) {
 					Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-					intent.putExtra("url",mIndustryEntityList.get(position-1).getTitleUrl());
-					intent.putExtra("title",mIndustryEntityList.get(position-1).getTitle());
-					intent.putExtra("titleIndex",1);
+					intent.putExtra("url",mobile_list.get(position-1).getTitleUrl());
+					intent.putExtra("title",mobile_list.get(position-1).getTitle());
+					intent.putExtra("titleIndex",2);
 					mActivity.startActivity(intent);
 					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
 				}else{
@@ -148,9 +151,9 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();
-		mIndustryEntityList = new MobileDao(mActivity).getSaveIndustry();
-		if (null == mIndustryEntityList || mIndustryEntityList.size() == 0) {
-			mIndustryEntityList = new ArrayList<IndustryEntity>();
+		mobile_list = new MobileDao(mActivity).getSaveIndustry();
+		if (null == mobile_list || mobile_list.size() == 0) {
+			mobile_list = new ArrayList<IndustryEntity>();
 			mListView.startRefresh();
 		}
 		//		mListView.startRefresh();
@@ -164,7 +167,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return null == mIndustryEntityList ? 0 :mIndustryEntityList.size();
+			return null == mobile_list ? 0 :mobile_list.size();
 		}
 
 		@Override
@@ -183,6 +186,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			final ViewHolder viewHolder;
+			
 			if (null == convertView) {
 				convertView = mLayoutInflater.inflate(R.layout.mobile_xlistview_item,parent,false);
 				viewHolder = new ViewHolder();
@@ -196,13 +200,14 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 			}else{
 				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			if (null != mIndustryEntityList && mIndustryEntityList.size() > 0) {
-				viewHolder.mTitle.setText(mIndustryEntityList.get(position).getTitle());
-				viewHolder.mContent.setText(mIndustryEntityList.get(position).getContent());
-				viewHolder.mPubTime.setText(mIndustryEntityList.get(position).getPubTime());
-				viewHolder.mReadCount.setText(mIndustryEntityList.get(position).getReadCount());
-				viewHolder.mCommentCount.setText(mIndustryEntityList.get(position).getCommentCount());
-				final String image_url = mIndustryEntityList.get(position).getPicUrl();
+			Log.i(TAG, "title========="+mobile_list.get(position).getTitle());
+			if (null != mobile_list && mobile_list.size() > 0) {
+				viewHolder.mTitle.setText(mobile_list.get(position).getTitle());
+				viewHolder.mContent.setText(mobile_list.get(position).getContent());
+				viewHolder.mPubTime.setText(mobile_list.get(position).getPubTime());
+				viewHolder.mReadCount.setText(mobile_list.get(position).getReadCount());
+				viewHolder.mCommentCount.setText(mobile_list.get(position).getCommentCount());
+				final String image_url = mobile_list.get(position).getPicUrl();
 				if (null == image_url || image_url.equals("")) {
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.GONE);
 				}else {
@@ -246,7 +251,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 
 			if (!isConnected) {
 				Log.d("test","the net work is "+isConnected);
-				mIndustryEntityList = new MobileDao(mActivity).getSaveIndustry();
+				mobile_list = new MobileDao(mActivity).getSaveIndustry();
 				
 			}else{ 
 				String isTag = "";
@@ -255,6 +260,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
 
 					Element leftDiv = doc.getElementsByAttributeValue("id","ddimagetabs").get(0);
+
 					String title = "";
 					String titleUrl = "";
 					String pubTime = "";
@@ -264,6 +270,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 					String content = "";
 					List<String>tags = new ArrayList<String>();
 					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
+					//						System.out.println(contentDiv);
 					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
 					IndustryEntity cloudEntity = null;
 					for (Element element : contents) {
@@ -302,15 +309,15 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 								} catch (Exception e) {
 									Log.d("html",isTag);
 									if (null != isTag && "isrefresh".equals(isTag)) {
-										mIndustryEntityList = dbUtils.findAll(IndustryEntity.class);
-										if (null != mIndustryEntityList) {
-											mIndustryEntityList.add(0, cloudEntity);
+										mobile_list = dbUtils.findAll(IndustryEntity.class);
+										if (null != mobile_list) {
+											mobile_list.add(0, cloudEntity);
 											dbUtils.delete(MobileEntity.class);
-											dbUtils.saveAll(mIndustryEntityList);
+											dbUtils.saveAll(mobile_list);
 										}
 									}else {
 										dbUtils.save(cloudEntity);
-										mIndustryEntityList.add(cloudEntity);
+										mobile_list.add(cloudEntity);
 									}
 								}
 
@@ -335,27 +342,6 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 			super.onPostExecute(result);
 		}
 	}
-
-
-
-	private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
-
-		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
-
-		@Override
-		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-			if (loadedImage != null) {
-				ImageView imageView = (ImageView) view;
-				boolean firstDisplay = !displayedImages.contains(imageUri);
-				if (firstDisplay) {
-					FadeInBitmapDisplayer.animate(imageView, 200);
-					displayedImages.add(imageUri);
-				}
-			}
-		}
-	}
-
-
 
 	@Override
 	public void onLoadMore() {

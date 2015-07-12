@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 
 public class IndustryEntity{
 
+	private static final long serialVersionUID = 1L;
+	private int id;
 	private String title;
 	private String titleUrl;
 	private String pubTime;
@@ -20,7 +22,7 @@ public class IndustryEntity{
 	
 	public IndustryEntity() {
 	}
-
+	
 	public IndustryEntity(String title, String titleUrl, String pubTime,
 			String readCount, String picUrl, String content) {
 		super();
@@ -31,6 +33,7 @@ public class IndustryEntity{
 		this.picUrl = picUrl;
 		this.content = content;
 	}
+	
 	public IndustryEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags,Bitmap bitmap) {
@@ -45,7 +48,6 @@ public class IndustryEntity{
 		this.bitmap = bitmap;
 	}
 
-
 	public IndustryEntity(String title, String titleUrl, String pubTime,
 			String readCount, String commentCount, String picUrl,
 			String content, List<String> tags) {
@@ -59,17 +61,16 @@ public class IndustryEntity{
 		this.tags = tags;
 	}
 
-	public String getTitle() {
-		return title;
-	}
-
-
 	public String getTitleUrl() {
 		return titleUrl;
 	}
 
 	public void setTitleUrl(String titleUrl) {
 		this.titleUrl = titleUrl;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 
 	public void setTitle(String title) {
@@ -119,5 +120,4 @@ public class IndustryEntity{
 	public void setBitmap(Bitmap bitmap) {
 		this.bitmap = bitmap;
 	}
-
 }
