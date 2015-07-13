@@ -2,6 +2,7 @@ package com.esc.csdn.fragment;
 
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,51 +88,24 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 		imageLoader.init(ImageLoaderConfiguration.createDefault(mActivity));
 		dbUtils = DbUtils.create(mActivity);
-
-		options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_on_loading)
-		.showImageForEmptyUri(R.drawable.ic_empty)
-		.showImageOnFail(R.drawable.ic_error)
-		.cacheInMemory(true)
-		.cacheOnDisk(true)
-		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(10))
-		.build();
-
+		
+        options=new DisplayImageOptions.Builder()
+        			.showImageOnLoading(R.drawable.ic_on_loading)
+					.showImageForEmptyUri(R.drawable.ic_empty)
+					.showImageOnFail(R.drawable.ic_error)
+					.cacheInMemory(true)
+					.cacheOnDisk(true)
+					.considerExifParams(true)
+					.displayer(new RoundedBitmapDisplayer(10))
+					.build();
 		mCloudEntityList = new ArrayList<CloudEntity>();
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mCloudEntityList = new ArrayList<CloudEntity>();
 		mobileAdapter = new MobileAdapter();
-
 		mListView.setAdapter(mobileAdapter);
 
 
-		mListView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View view, int position,
-					long arg3) {
-				if (NetUtil.checkNet(getActivity())) {
-					Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-					intent.putExtra("url",mCloudEntityList.get(position-1).getTitleUrl());
-					intent.putExtra("title",mCloudEntityList.get(position-1).getTitle());
-					intent.putExtra("titleIndex",0);
-					mActivity.startActivity(intent);
-					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
-				}else{
-					Toast.makeText(getActivity(), "请打开网络连接...",Toast.LENGTH_LONG).show();
-				}
-			}
-		});
-
-		mListView.setOnLongClickListener(new OnLongClickListener() {
-
-			@Override
-			public boolean onLongClick(View position) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		});
+		mListView.setOnItemClickListener(mClickListener);
+		mListView.setOnLongClickListener(mLongClickListener);
 		//mListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
@@ -139,14 +113,39 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		mCloudEntityList = new MobileDao(mActivity).getSaveCLoud();
 		if (null == mCloudEntityList || mCloudEntityList.size() == 0) {
 			mCloudEntityList = new ArrayList<CloudEntity>();
-			//mListView.startRefresh();
 			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
 			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/"});
 		}
 	}
+	private OnItemClickListener mClickListener=new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			// TODO Auto-generated method stub
+			if (NetUtil.checkNet(getActivity())) {
+				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
+				intent.putExtra("url",mCloudEntityList.get(position-1).getTitleUrl());
+				intent.putExtra("title",mCloudEntityList.get(position-1).getTitle());
+				intent.putExtra("titleIndex",0);
+				mActivity.startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
+			}else{
+				Toast.makeText(getActivity(), "请打开网络连接...",Toast.LENGTH_LONG).show();
+			}
+		}
+	};
+	private OnLongClickListener mLongClickListener=new OnLongClickListener() {
+		
+		@Override
+		public boolean onLongClick(View v) {
+			// TODO Auto-generated method stub
+			Toast.makeText(getActivity(), "long click!", Toast.LENGTH_LONG).show();
+			return false;
+		}
+	};
 	private class MobileAdapter extends BaseAdapter {
 		private ImageLoadingListener animateFirstListener=new AnimateFirstDisplayListener();
-		//private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
@@ -196,7 +195,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.VISIBLE);
 				}
 
-				ImageLoader.getInstance().displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
+				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
 				if (!NetUtil.checkNet(mActivity)) {
@@ -207,9 +206,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 			}
 			return convertView;
-
 		}
-
 	}
 
 	private class ViewHolder {
@@ -219,7 +216,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		TextView mPubTime;
 		TextView mReadCount;
 		TextView mCommentCount;
-
 	}
 
 	class MyAsyncTask extends AsyncTask<String,Integer,Void> {
@@ -240,11 +236,15 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			if (!isConnected) {
 				mCloudEntityList = new MobileDao(mActivity).getSaveCLoud();
 			}else{ 
-				String isTag = "";
+				
+				if(mCloudEntityList==null||mCloudEntityList.size()==0)
+					mCloudEntityList=new ArrayList<CloudEntity>();
+				
 				Document doc;
 				MyCircleView circleView = (MyCircleView) LayoutInflater.from(mActivity).inflate(R.layout.mobile_xlistview_layout,null).findViewById(R.id.progressfresh);
 				circleView.setVisibility(View.GONE);
 				try {
+					
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
 
 					String title = "";
@@ -276,7 +276,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 							tags.add(element2.text());
 						}
 						cloudEntity = new CloudEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
-						cacheList = new MobileDao(mActivity).getSaveCLoud();
+						//cacheList = new MobileDao(mActivity).getSaveCLoud();
 						if (null != cacheList && cacheList.size() > 0) {
 							for (CloudEntity entity : cacheList) {
 								if (entity.getTitleUrl().equals(cloudEntity.getTitleUrl())) {
@@ -313,18 +313,31 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	}
 	@Override
 	public void onLoadMore() {
-		new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/cloud/"+currentPage++});
+		
+		if(NetUtil.checkNet(getActivity())){
+			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/cloud/"+currentPage++});
+		}
+		else{
+			mListView.stopLoadMore();
+			Toast.makeText(getActivity(), "无法连接网络...", Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@Override
 	public void onRefresh() {
-		if (null == cache.getAsString("lastrefresh")) {
-			mListView.setRefreshTime("第一次刷新");
-		}else{
-			mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+		if(NetUtil.checkNet(getActivity())){
+			if (null == cache.getAsString("lastrefresh")) {
+				mListView.setRefreshTime("第一次刷新");
+			}else{
+				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+			}
+			
+			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/"});
 		}
-		new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/"});
-
+		else{
+			mListView.stopRefresh();
+			Toast.makeText(getActivity(), "无法连接网络...", Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@Override

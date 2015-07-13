@@ -1,6 +1,4 @@
 package com.esc.csdn.fragment;
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +38,9 @@ import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
+import com.esc.csdn.entity.ProgrammerEntity;
 import com.esc.csdn.entity.SoftDevEntity;
+import com.esc.csdn.fragment.ProgrammerFragment.MyAsyncTask;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
 import com.esc.listener.AnimateFirstDisplayListener;
@@ -54,6 +54,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.special.ResideMenu.ResideMenu;
 
 public class SoftDevFragment extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
+	
 	private XListView mListView = null;
 	private MobileAdapter mobileAdapter = null;
 	private List<SoftDevEntity>mSoftDevEntityList = new ArrayList<SoftDevEntity>();
@@ -74,67 +75,44 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 	private View mLayoutView;
 	private View parentView = null;
 	
-	 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-	        parentView = inflater.inflate(R.layout.mobile_xlistview_layout, container, false);
-	        ResideMenu resideMenu = ((MainFrame)getActivity()).getResideMenu();
-	        ((ViewGroup)(getActivity().findViewById(android.R.id.content))).getChildAt(0).setBackgroundColor(Color.parseColor("#121111"));
-	        resideMenu.addIgnoredView(parentView);
-	        mActivity = getActivity();
-	        mLayoutView = parentView;
-	        init();
-	        
-	        parentView.setOnTouchListener(this);
-			return parentView;
-	    }
-
-	
-	private void init() {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        parentView = inflater.inflate(R.layout.mobile_xlistview_layout, container, false);
+        ResideMenu resideMenu = ((MainFrame)getActivity()).getResideMenu();
+        ((ViewGroup)(getActivity().findViewById(android.R.id.content))).getChildAt(0).setBackgroundColor(Color.parseColor("#121111"));
+        resideMenu.addIgnoredView(parentView);
+        mActivity = getActivity();
+        mLayoutView = parentView;
+        init();
+        
+        parentView.setOnTouchListener(this);
+		return parentView;
+    }
+	 private void init() {
 		cache = ACache.get(mActivity);
 		mLayoutInflater = LayoutInflater.from(mActivity);
 
 		imageLoader.init(ImageLoaderConfiguration.createDefault(mActivity));
 		dbUtils = DbUtils.create(mActivity);
 
-		options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_on_loading)
-		.showImageForEmptyUri(R.drawable.ic_empty)
-		.showImageOnFail(R.drawable.ic_error)
-		.cacheInMemory(true)
-		.cacheOnDisk(true)
-		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(10))
-		.build();
+		options=new DisplayImageOptions.Builder()
+					.showImageOnLoading(R.drawable.ic_on_loading)
+					.showImageForEmptyUri(R.drawable.ic_empty)
+					.showImageOnFail(R.drawable.ic_error)
+					.cacheInMemory(true)
+					.cacheOnDisk(true)
+					.considerExifParams(true)
+					.displayer(new RoundedBitmapDisplayer(10))
+					.build();
 		
 		mSoftDevEntityList = new ArrayList<SoftDevEntity>();
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mSoftDevEntityList = new ArrayList<SoftDevEntity>();
 		mobileAdapter = new MobileAdapter();
 		mListView.setAdapter(mobileAdapter);
 
 
-		mListView.setOnItemClickListener(new OnItemClickListener() {
+		mListView.setOnItemClickListener(mClickListener);
 
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View view, int position,
-					long arg3) {
-				//				Log.i(TAG,mobile_list.get(position).getTitle());
-				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-				intent.putExtra("url",mSoftDevEntityList.get(position-1).getTitleUrl());
-				intent.putExtra("title",mSoftDevEntityList.get(position-1).getTitle());
-				intent.putExtra("titleIndex",4);
-				mActivity.startActivity(intent);
-				getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
-			}
-		});
-
-		mListView.setOnLongClickListener(new OnLongClickListener() {
-			
-			@Override
-			public boolean onLongClick(View position) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		});
+		mListView.setOnLongClickListener(mLongClickListener);
 		
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
@@ -147,7 +125,33 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		}
 	}
 
+	private OnItemClickListener mClickListener=new OnItemClickListener() {
 
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			// TODO Auto-generated method stub
+			if (NetUtil.checkNet(getActivity())) {
+				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
+				intent.putExtra("url",mSoftDevEntityList.get(position-1).getTitleUrl());
+				intent.putExtra("title",mSoftDevEntityList.get(position-1).getTitle());
+				intent.putExtra("titleIndex",3);
+				mActivity.startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
+			}else{
+				Toast.makeText(getActivity(), "请打开网络连接...",Toast.LENGTH_LONG).show();
+			}
+		}
+	};
+	private OnLongClickListener mLongClickListener=new OnLongClickListener() {
+		
+		@Override
+		public boolean onLongClick(View v) {
+			// TODO Auto-generated method stub
+			Toast.makeText(getActivity(), "long click!", Toast.LENGTH_LONG).show();
+			return false;
+		}
+	};
 
 
 	private class MobileAdapter extends BaseAdapter {
@@ -196,13 +200,13 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.VISIBLE);
 				}
 				
-				ImageLoader.getInstance().displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
+				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
 				if (!NetUtil.checkNet(mActivity)) {
-					Toast.makeText(mActivity, "please check the network link",1000).show();
+					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "no data more",1000).show();
+					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
 				}
 
 			}
@@ -233,7 +237,10 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 			if (!isConnected) {
 				mSoftDevEntityList = new MobileDao(mActivity).getSaveSoftDev();
 			}else{ 
-				String isTag = "";
+				
+				if(mSoftDevEntityList==null||mSoftDevEntityList.size()==0)
+					mSoftDevEntityList=new ArrayList<SoftDevEntity>();
+				
 				Document doc;
 				try {
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
@@ -307,17 +314,31 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 	}
 	@Override
 	public void onLoadMore() {
-		new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/sd/"+currentPage++});
+		
+		if(NetUtil.checkNet(getActivity())){
+			new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/sd/"+currentPage++});
+		}
+		else{
+			mListView.stopLoadMore();
+			Toast.makeText(getActivity(), "无法连接网络...", Toast.LENGTH_LONG).show();
+		}
+		
 	}
 	@Override
 	public void onRefresh() {
-		if (null == cache.getAsString("SOFT")) {
-			mListView.setRefreshTime("第一次刷新");
-
-		}else{
-			mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+		
+		if(NetUtil.checkNet(getActivity())){
+			if (null == cache.getAsString("SOFTDEV")) {
+				mListView.setRefreshTime("第一次刷新");
+			}else{
+				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+			}
+			new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/"});
 		}
-		new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/"});
+		else{
+			mListView.stopRefresh();
+			Toast.makeText(getActivity(), "无法连接网络...", Toast.LENGTH_LONG).show();
+		}
 	}
 
 	@Override

@@ -10,34 +10,17 @@ import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.entity.SoftDevEntity;
 import com.lidroid.xutils.DbUtils;
 import com.lidroid.xutils.exception.DbException;
-
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.UrlQuerySanitizer.ValueSanitizer;
-import android.util.Log;
 
 public class MobileDao {
-	private  final String TABLE_NAME = "mobile";
-	private  ContentValues values = null;
-	private  SQLiteDatabase db;
 	private  List<MobileEntity>list1 = new ArrayList<MobileEntity>();
 	private  List<CloudEntity>list2 = new ArrayList<CloudEntity>();
 	private  List<IndustryEntity>list3 = new ArrayList<IndustryEntity>();
 	private  List<ProgrammerEntity>list4 = new ArrayList<ProgrammerEntity>();
 	private  List<SoftDevEntity>list5 = new ArrayList<SoftDevEntity>();
-//	private  List<MobileEntity>list6 = new ArrayList<MobileEntity>();
-//	private  List<MobileEntity>list7 = new ArrayList<MobileEntity>();
 	private List<MobileTitleSave>listMobileTitleSaves = new ArrayList<MobileTitleSave>();
 	private Context context;
 	DbUtils dbUtils = null;
-
-
-
-
-
-
 	public MobileDao(Context context) {
 		this.context = context;
 		dbUtils = DbUtils.create(context);
@@ -45,8 +28,6 @@ public class MobileDao {
 
 
 	public  long save(MobileEntity mobileEntity) {
-//		values = new ContentValues();
-//		db = openhelper.getWritableDatabase();
 		long count = -1;
 		try {
 			dbUtils.save(mobileEntity);
@@ -69,6 +50,17 @@ public class MobileDao {
 		return list1;
 	}
 
+	public  long save(CloudEntity cloudEntity) {
+		long count = -1;
+		try {
+			dbUtils.save(cloudEntity);
+			count = 1;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return count;
+	}
 	public List<CloudEntity>getSaveCLoud() {
 		try {
 			list2 = dbUtils.findAll(CloudEntity.class);
@@ -78,7 +70,17 @@ public class MobileDao {
 		return list2;
 	}
 	
-	
+	public  long save(ProgrammerEntity programmerEntity) {
+		long count = -1;
+		try {
+			dbUtils.save(programmerEntity);
+			count = 1;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return count;
+	}
 	public List<ProgrammerEntity>getSaveProgrammer() {
 		try {
 			list4 = dbUtils.findAll(ProgrammerEntity.class);
@@ -89,7 +91,17 @@ public class MobileDao {
 		
 	}
 	
-	
+	public  long save(SoftDevEntity softDevEntity) {
+		long count = -1;
+		try {
+			dbUtils.save(softDevEntity);
+			count = 1;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return count;
+	}
 	public List<SoftDevEntity>getSaveSoftDev() {
 		try {
 			list5 = dbUtils.findAll(SoftDevEntity.class);
@@ -100,7 +112,17 @@ public class MobileDao {
 		
 	}
 	
-	
+	public  long save(IndustryEntity industryEntity) {
+		long count = -1;
+		try {
+			dbUtils.save(industryEntity);
+			count = 1;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return count;
+	}
 	public List<IndustryEntity>getSaveIndustry() {
 		try {
 			list3 = dbUtils.findAll(IndustryEntity.class);
@@ -110,16 +132,13 @@ public class MobileDao {
 		return list3;
 		
 	}
+	public void saveMobileTitle(MobileTitleSave mobileTitleSave) throws DbException {
+		dbUtils.save(mobileTitleSave);
+		
+	}
 	public List<MobileTitleSave>getSavedMobileTitle() throws DbException {
 		listMobileTitleSaves = dbUtils.findAll(MobileTitleSave.class);
 		return listMobileTitleSaves;
 		
 	}
-	
-	public void saveMobileTitle(MobileTitleSave mobileTitleSave) throws DbException {
-		dbUtils.save(mobileTitleSave);
-		
-	}
-	
-	
 }

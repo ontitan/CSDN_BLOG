@@ -40,7 +40,9 @@ import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.MyCircleView;
 import com.esc.csdn.dao.MobileDao;
+import com.esc.csdn.entity.IndustryEntity;
 import com.esc.csdn.entity.MobileEntity;
+import com.esc.csdn.fragment.IndustryFragment.MyAsyncTask;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
 import com.esc.listener.AnimateFirstDisplayListener;
@@ -94,19 +96,18 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		imageLoader.init(ImageLoaderConfiguration.createDefault(mActivity));
 		dbUtils = DbUtils.create(mActivity);
 
-		options = new DisplayImageOptions.Builder()
-		.showImageOnLoading(R.drawable.ic_on_loading)
-		.showImageForEmptyUri(R.drawable.ic_empty)
-		.showImageOnFail(R.drawable.ic_error)
-		.cacheInMemory(true)
-		.cacheOnDisk(true)
-		.considerExifParams(true)
-		.displayer(new RoundedBitmapDisplayer(10))
-		.build();
+		options=new DisplayImageOptions.Builder()
+					.showImageOnLoading(R.drawable.ic_on_loading)
+					.showImageForEmptyUri(R.drawable.ic_empty)
+					.showImageOnFail(R.drawable.ic_error)
+					.cacheInMemory(true)
+					.cacheOnDisk(true)
+					.considerExifParams(true)
+					.displayer(new RoundedBitmapDisplayer(10))
+					.build();
 
 		mMobileEntityList = new ArrayList<MobileEntity>();
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mMobileEntityList = new ArrayList<MobileEntity>();
 		mobileAdapter = new MobileAdapter();
 		//		Log.i(TAG, mListView == null ? "mListView is null" : " mListView not null");
 
@@ -114,36 +115,9 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 
 
 
-		mListView.setOnItemClickListener(new OnItemClickListener() {
+		mListView.setOnItemClickListener(mClickListener);
 
-			@Override
-			public void onItemClick(AdapterView<?> adapter, View view, int position,
-					long arg3) {
-				//				Log.i(TAG,mobile_list.get(position).getTitle());
-
-				if (NetUtil.checkNet(getActivity())) {
-					Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-					intent.putExtra("url",mMobileEntityList.get(position-1).getTitleUrl());
-					intent.putExtra("title",mMobileEntityList.get(position-1).getTitle());
-					intent.putExtra("titleIndex",1);
-					mActivity.startActivity(intent);
-					getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
-				}else{
-					Toast.makeText(getActivity(), "请打开网络连接...",Toast.LENGTH_LONG).show();
-				}
-
-
-			}
-		});
-
-		mListView.setOnLongClickListener(new OnLongClickListener() {
-
-			@Override
-			public boolean onLongClick(View position) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		});
+		mListView.setOnLongClickListener(mLongClickListener);
 		//mListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
@@ -157,7 +131,33 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		//		mListView.startRefresh();
 	}
 
+	private OnItemClickListener mClickListener=new OnItemClickListener() {
 
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			// TODO Auto-generated method stub
+			if (NetUtil.checkNet(getActivity())) {
+				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
+				intent.putExtra("url",mMobileEntityList.get(position-1).getTitleUrl());
+				intent.putExtra("title",mMobileEntityList.get(position-1).getTitle());
+				intent.putExtra("titleIndex",1);
+				mActivity.startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
+			}else{
+				Toast.makeText(getActivity(), "请打开网络连接...",Toast.LENGTH_LONG).show();
+			}
+		}
+	};
+	private OnLongClickListener mLongClickListener=new OnLongClickListener() {
+		
+		@Override
+		public boolean onLongClick(View v) {
+			// TODO Auto-generated method stub
+			Toast.makeText(getActivity(), "long click!", Toast.LENGTH_LONG).show();
+			return false;
+		}
+	};
 
 
 	private class MobileAdapter extends BaseAdapter {
@@ -211,13 +211,13 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.VISIBLE);
 				}
 
-				ImageLoader.getInstance().displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
+				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
 				if (!NetUtil.checkNet(mActivity)) {
-					Toast.makeText(mActivity, "please check the network link",1000).show();
+					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "no data more",1000).show();
+					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
 				}
 
 			}
@@ -253,7 +253,10 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 				mMobileEntityList = new MobileDao(mActivity).getSavedMobile();
 				
 			}else{ 
-				String isTag = "";
+				
+				if(mMobileEntityList==null||mMobileEntityList.size()==0)
+					mMobileEntityList=new ArrayList<MobileEntity>();
+				
 				Document doc;
 				circleView = (MyCircleView) LayoutInflater.from(mActivity).inflate(R.layout.mobile_xlistview_layout,null).findViewById(R.id.progressfresh);
 				circleView.setVisibility(View.GONE);
@@ -330,18 +333,31 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 	}
 	@Override
 	public void onLoadMore() {
-		new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/mobile/"+currentPage++});
+		if(NetUtil.checkNet(getActivity())){
+			new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/mobile/"+currentPage++});
+		}
+		else{
+			mListView.stopLoadMore();
+			Toast.makeText(getActivity(), "无法连接网络...", Toast.LENGTH_LONG).show();
+		}
+		
 	}
 
 	@Override
 	public void onRefresh() {
-		if (null == cache.getAsString("lastrefresh")) {
-			mListView.setRefreshTime("第一次刷新");
-		}else{
-			mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+		
+		if(NetUtil.checkNet(getActivity())){
+			if (null == cache.getAsString("MOBILE")) {
+				mListView.setRefreshTime("第一次刷新");
+			}else{
+				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+			}
+			new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/"});
 		}
-		new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/"});
-
+		else{
+			mListView.stopRefresh();
+			Toast.makeText(getActivity(), "无法连接网络...", Toast.LENGTH_LONG).show();
+		}
 	}
 
 
