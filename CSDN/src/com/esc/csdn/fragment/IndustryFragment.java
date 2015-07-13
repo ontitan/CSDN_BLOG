@@ -39,6 +39,7 @@ import com.esc.csdn.MainFrame;
 import com.esc.csdn.MyCircleView;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
+import com.esc.csdn.entity.CloudEntity;
 import com.esc.csdn.entity.IndustryEntity;
 import com.esc.csdn.fragment.CloudFragment.MyAsyncTask;
 import com.esc.csdn.utils.NetUtil;
@@ -242,6 +243,10 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 				mIndustryEntity = new MobileDao(mActivity).getSaveIndustry();
 				
 			}else{ 
+				
+				if(mIndustryEntity==null||mIndustryEntity.size()==0)
+					mIndustryEntity=new ArrayList<IndustryEntity>();
+				
 				Document doc;
 				MyCircleView circleView = (MyCircleView) LayoutInflater.from(mActivity).inflate(R.layout.mobile_xlistview_layout,null).findViewById(R.id.progressfresh);
 				circleView.setVisibility(View.GONE);

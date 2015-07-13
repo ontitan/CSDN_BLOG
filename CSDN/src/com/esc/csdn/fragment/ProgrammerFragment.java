@@ -37,6 +37,7 @@ import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
+import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.entity.ProgrammerEntity;
 import com.esc.csdn.fragment.MobileFragment.MyAsyncTask;
 import com.esc.csdn.utils.NetUtil;
@@ -240,7 +241,10 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 				Log.d("test","the net work is "+isConnected);
 				mProgrammerEntityList = new MobileDao(mActivity).getSaveProgrammer();
 			}else{ 
-				String isTag = "";
+				
+				if(mProgrammerEntityList==null||mProgrammerEntityList.size()==0)
+					mProgrammerEntityList=new ArrayList<ProgrammerEntity>();
+				
 				Document doc;
 				try {
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();

@@ -2,6 +2,7 @@ package com.esc.csdn.fragment;
 
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -236,10 +237,15 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			if (!isConnected) {
 				mCloudEntityList = new MobileDao(mActivity).getSaveCLoud();
 			}else{ 
+				
+				if(mCloudEntityList==null||mCloudEntityList.size()==0)
+					mCloudEntityList=new ArrayList<CloudEntity>();
+				
 				Document doc;
 				MyCircleView circleView = (MyCircleView) LayoutInflater.from(mActivity).inflate(R.layout.mobile_xlistview_layout,null).findViewById(R.id.progressfresh);
 				circleView.setVisibility(View.GONE);
 				try {
+					
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
 
 					String title = "";
@@ -271,7 +277,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 							tags.add(element2.text());
 						}
 						cloudEntity = new CloudEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
-						cacheList = new MobileDao(mActivity).getSaveCLoud();
+						//cacheList = new MobileDao(mActivity).getSaveCLoud();
 						if (null != cacheList && cacheList.size() > 0) {
 							for (CloudEntity entity : cacheList) {
 								if (entity.getTitleUrl().equals(cloudEntity.getTitleUrl())) {
@@ -326,6 +332,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			}else{
 				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
 			}
+			
 			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/"});
 		}
 		else{

@@ -40,6 +40,7 @@ import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.MyCircleView;
 import com.esc.csdn.dao.MobileDao;
+import com.esc.csdn.entity.IndustryEntity;
 import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.fragment.IndustryFragment.MyAsyncTask;
 import com.esc.csdn.utils.NetUtil;
@@ -252,7 +253,10 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 				mMobileEntityList = new MobileDao(mActivity).getSavedMobile();
 				
 			}else{ 
-				String isTag = "";
+				
+				if(mMobileEntityList==null||mMobileEntityList.size()==0)
+					mMobileEntityList=new ArrayList<MobileEntity>();
+				
 				Document doc;
 				circleView = (MyCircleView) LayoutInflater.from(mActivity).inflate(R.layout.mobile_xlistview_layout,null).findViewById(R.id.progressfresh);
 				circleView.setVisibility(View.GONE);
