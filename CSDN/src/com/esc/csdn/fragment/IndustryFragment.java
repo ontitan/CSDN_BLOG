@@ -203,13 +203,13 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.VISIBLE);
 				}
 
-				ImageLoader.getInstance().displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
+				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
 				if (!NetUtil.checkNet(mActivity)) {
-					Toast.makeText(mActivity, "please check the network link",1000).show();
+					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "no data more",1000).show();
+					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
 				}
 
 			}
@@ -247,9 +247,6 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 				circleView.setVisibility(View.GONE);
 				try {
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
-
-					Element leftDiv = doc.getElementsByAttributeValue("id","ddimagetabs").get(0);
-
 					String title = "";
 					String titleUrl = "";
 					String pubTime = "";
@@ -259,7 +256,6 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 					String content = "";
 					List<String>tags = new ArrayList<String>();
 					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
-					//						System.out.println(contentDiv);
 					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
 					IndustryEntity industryEntity = null;
 					for (Element element : contents) {

@@ -205,9 +205,9 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 
 			}else{
 				if (!NetUtil.checkNet(mActivity)) {
-					Toast.makeText(mActivity, "please check the network link",1000).show();
+					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "no data more",1000).show();
+					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
 				}
 
 			}

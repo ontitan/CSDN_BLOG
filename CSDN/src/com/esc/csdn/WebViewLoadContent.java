@@ -94,21 +94,20 @@ public class WebViewLoadContent extends Activity implements OnTouchListener{
 						mSave.setBackgroundResource(R.drawable.no_collect);
 						mSave.setVisibility(View.VISIBLE);
 						hasSaved = false;
-						Toast.makeText(WebViewLoadContent.this,"收藏取消",1000).show();
+						Toast.makeText(WebViewLoadContent.this,"收藏取消",Toast.LENGTH_LONG).show();
 					} catch (DbException e) {
-						Toast.makeText(WebViewLoadContent.this,"取消收藏失败",1000).show();
+						Toast.makeText(WebViewLoadContent.this,"取消收藏失败",Toast.LENGTH_LONG).show();
 					}
 				}else{
 					try {
-						Log.d("test","=====start====");
 						
 						dbUtils.save(saveEntity);
 						mSave.setBackgroundResource(R.drawable.collect);
 						mSave.setVisibility(View.VISIBLE);
 						hasSaved = true;
-						Toast.makeText(WebViewLoadContent.this,"收藏成功",1000).show();
+						Toast.makeText(WebViewLoadContent.this,"收藏成功",Toast.LENGTH_LONG).show();
 					} catch (DbException e) {
-						Toast.makeText(WebViewLoadContent.this,"收藏失败",1000).show();
+						Toast.makeText(WebViewLoadContent.this,"收藏失败",Toast.LENGTH_LONG).show();
 					}
 				}
 			}
@@ -142,9 +141,8 @@ public class WebViewLoadContent extends Activity implements OnTouchListener{
 			Document childDoc;
 			try {
 				childDoc = Jsoup.connect(url).timeout(10000).get();
-				Log.d("test",childDoc.toString());
 				html = childDoc.getElementsByAttributeValue("class","left").get(0).toString();
-				
+				String s1=html;
 				html = html.replaceAll("<div class=\"page_nav\">[\\s\\S]*?<div id=\"comments\" class=\"csdn_comments\"></div> ", "");
 				html = html.replaceAll("<div class=\"share\">[\\s\\S]*?</div>","");
 				html = html.replaceAll(" <div class=\"digg\">[\\s\\S]*?</div>","");

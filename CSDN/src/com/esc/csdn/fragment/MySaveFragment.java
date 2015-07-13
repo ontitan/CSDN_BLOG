@@ -94,7 +94,7 @@ public class MySaveFragment extends Fragment implements OnTouchListener{
 				deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
 						0x3F, 0x25)));
 				// set item width
-				deleteItem.setWidth(dp2px(90));
+				deleteItem.setWidth(dp2px(65));
 				// set a icon
 				deleteItem.setIcon(R.drawable.ic_delete);
 				// add to menu
@@ -194,17 +194,10 @@ public class MySaveFragment extends Fragment implements OnTouchListener{
 	private class ViewHolder {
 		TextView textTitle;
 	}
-
-
-
-
-
 	@Override
 	public boolean onTouch(View arg0, MotionEvent arg1) {
 		return true;
 	}
-
-
 	private int dp2px(int dp) {
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
 				getResources().getDisplayMetrics());

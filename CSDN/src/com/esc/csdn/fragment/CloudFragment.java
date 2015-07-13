@@ -145,7 +145,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	};
 	private class MobileAdapter extends BaseAdapter {
 		private ImageLoadingListener animateFirstListener=new AnimateFirstDisplayListener();
-		//private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
