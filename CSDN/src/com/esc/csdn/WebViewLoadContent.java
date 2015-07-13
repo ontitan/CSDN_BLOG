@@ -142,19 +142,17 @@ public class WebViewLoadContent extends Activity implements OnTouchListener{
 			try {
 				childDoc = Jsoup.connect(url).timeout(10000).get();
 				html = childDoc.getElementsByAttributeValue("class","left").get(0).toString();
-				String s1=html;
-				html = html.replaceAll("<div class=\"page_nav\">[\\s\\S]*?<div id=\"comments\" class=\"csdn_comments\"></div> ", "");
+				/*html = html.replaceAll("<div class=\"page_nav\">[\\s\\S]*?<div id=\"comments\" class=\"csdn_comments\"></div> ", "");
 				html = html.replaceAll("<div class=\"share\">[\\s\\S]*?</div>","");
 				html = html.replaceAll(" <div class=\"digg\">[\\s\\S]*?</div>","");
 				html = html.replaceAll("<div class=\"related\">[\\s\\S]*?</div>","");
 				html = html.replaceAll("<div id=\"con_three_2\"[\\s\\S]*?</div>","");
 				html = html.replaceAll("<div id=\"Tab3\" class=\"relational\"> ","");
-				html = html.replaceFirst("<h2 class=\"tab_1 Menubox\">[\\s\\S]*?</h2>","");
+				html = html.replaceFirst("<h2 class=\"tab_1 Menubox\">[\\s\\S]*?</h2>","");*/
 				html = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html\"; charset=\"utf-8\"/></head><body>" + html;
 				html = html + "</body></html>";
 			} catch (Exception e) {
 				html = download(url);
-				Log.d("html",html);
 				html = html.replaceFirst("<table width=[\\s\\S]*?</table>","");
 				}
 
