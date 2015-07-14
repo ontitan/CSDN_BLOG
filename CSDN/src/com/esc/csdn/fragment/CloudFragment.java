@@ -2,7 +2,6 @@ package com.esc.csdn.fragment;
 
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +30,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,8 +70,10 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 	private View mLayoutView;
 	private View parentView = null;
+	private LinearLayout mHorizLinearLayout=null;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		
 		parentView = inflater.inflate(R.layout.mobile_xlistview_layout, container, false);
 		ResideMenu resideMenu = ((MainFrame)getActivity()).getResideMenu();
 		resideMenu.addIgnoredView(parentView);
@@ -85,7 +88,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	private void init() {
 		cache = ACache.get(mActivity);
 		mLayoutInflater = LayoutInflater.from(mActivity);
-
 		imageLoader.init(ImageLoaderConfiguration.createDefault(mActivity));
 		dbUtils = DbUtils.create(mActivity);
 		
@@ -196,7 +198,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 				}
 
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
-
 			}else{
 				if (!NetUtil.checkNet(mActivity)) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();

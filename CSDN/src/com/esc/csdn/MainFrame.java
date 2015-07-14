@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -65,8 +66,9 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	private ACache cache = null;
 	private String isChecked = "";
 	
-	private int exitInt = 1;
 	private ImageView mShareBtn=null;
+	
+	private AlertDialog mExitDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -145,12 +147,10 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	private ResideMenu.OnMenuListener mMenuListener = new ResideMenu.OnMenuListener() {
 		@Override
 		public void openMenu() {
-			//            Toast.makeText(MainActivity.this, "Menu is opened!", Toast.LENGTH_SHORT).show();
 		}
 
 		@Override
 		public void closeMenu() {
-			//            Toast.makeText(MainActivity.this, "Menu is closed!", Toast.LENGTH_SHORT).show();
 		}
 	};
 
@@ -195,13 +195,30 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 			setActionBarTitle(mMenu_name[5]);
 			changeFragment(new MySaveFragment());
 		}else if (view == mMenu_exit) {
-		
-        	
+			showExitDialog();
+		}else if(view.getId()==R.id.canelBtn){
+			
+			mExitDialog.cancel();
+		}else if(view.getId()==R.id.okBtn){
+			android.os.Process.killProcess(android.os.Process.myPid());
+			System.exit(0);
 		}
-
-		mResideMenu.closeMenu();
+		if(mResideMenu.isOpened())
+			mResideMenu.closeMenu();
 	}
-
+	
+	private void showExitDialog() {
+		// TODO Auto-generated method stub
+		mExitDialog=new AlertDialog.Builder(this).create();
+		mExitDialog.show();
+		Window mWindow=mExitDialog.getWindow();
+		mWindow.setContentView(R.layout.tips_window);
+		TextView canelTextView=(TextView)mWindow.findViewById(R.id.canelBtn);
+		TextView okTextView=(TextView)mWindow.findViewById(R.id.okBtn);
+		canelTextView.setOnClickListener(this);
+		okTextView.setOnClickListener(this);
+		
+	}
 	public ResideMenu getResideMenu(){
 		return mResideMenu;
 		
@@ -258,14 +275,16 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	 * 监听系统的返回健
 	 */
 	public boolean onKeyDown(int keyCode, KeyEvent event) { 
-		if (exitInt == 1 && keyCode == KeyEvent.KEYCODE_BACK) {
-			mResideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
-			exitInt = 2;
-		}else if (keyCode == KeyEvent.KEYCODE_BACK) {
-			mResideMenu.closeMenu();
-			exitInt = 1;
+		if(keyCode==KeyEvent.KEYCODE_BACK){
+			if(mResideMenu.isOpened()){
+				mResideMenu.closeMenu();
+				showExitDialog();
+			}else{
+				showExitDialog();
+			}
+			
 		}
-		return true; 
+		return true;
     }
 
 	@Override
