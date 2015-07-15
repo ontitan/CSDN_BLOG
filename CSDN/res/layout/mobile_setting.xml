@@ -31,44 +31,6 @@
    	       android:layout_marginLeft="10dp"
    	       android:layout_marginRight="10dp"
    	       android:background="@color/view_divider"/>
-   	   <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/yao_crop"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:clickable="false"
-                android:textColor="@android:color/black"
-                android:padding="10dp"
-                android:layout_marginLeft="8dp"
-                android:text="@string/move_phone"
-                android:textSize="18sp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:padding="5dp" >
-
-                <ToggleButton
-                    android:id="@+id/toogleButton_id"
-                    android:layout_width="70dp"
-                    android:layout_height="30dp"
-                    android:layout_marginRight="3dp"
-                    android:textSize="0sp"
-                    android:background="@drawable/toogle_selector">
-                </ToggleButton>
-            </LinearLayout>
-        </RelativeLayout>
-    </LinearLayout>
-    <com.esc.csdn.CirclePro
-        android:id="@+id/clear_data_pro"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-       	android:visibility="gone"
-        liu:circlecolor="@color/bg_color"
-        liu:half="80dp" />
+   	</LinearLayout>
+    
 </FrameLayout>

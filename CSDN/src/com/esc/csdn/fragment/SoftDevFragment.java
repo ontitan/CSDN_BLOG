@@ -15,20 +15,18 @@ import org.netshull.csdn.R;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,9 +36,7 @@ import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
-import com.esc.csdn.entity.ProgrammerEntity;
 import com.esc.csdn.entity.SoftDevEntity;
-import com.esc.csdn.fragment.ProgrammerFragment.MyAsyncTask;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
 import com.esc.listener.AnimateFirstDisplayListener;
@@ -112,7 +108,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 
 		mListView.setOnItemClickListener(mClickListener);
 
-		mListView.setOnLongClickListener(mLongClickListener);
+		mListView.setOnItemLongClickListener(mLongClickListener);
 		
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
@@ -143,13 +139,14 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 			}
 		}
 	};
-	private OnLongClickListener mLongClickListener=new OnLongClickListener() {
-		
+	private OnItemLongClickListener mLongClickListener=new OnItemLongClickListener() {
+
 		@Override
-		public boolean onLongClick(View v) {
+		public boolean onItemLongClick(AdapterView<?> parent, View view,
+				int position, long id) {
 			// TODO Auto-generated method stub
-			Toast.makeText(getActivity(), "long click!", Toast.LENGTH_LONG).show();
-			return false;
+			Toast.makeText(getActivity(),"long click!", Toast.LENGTH_LONG).show();
+			return true;
 		}
 	};
 

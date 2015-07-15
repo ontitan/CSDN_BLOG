@@ -1,39 +1,21 @@
 package com.esc.csdn;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.netshull.csdn.R;
 
 import android.app.AlertDialog;
-import android.app.Service;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+
 import android.os.Bundle;
-import android.os.Vibrator;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.esc.csdn.fragment.CloudFragment;
 import com.esc.csdn.fragment.IndustryFragment;
 import com.esc.csdn.fragment.ProgrammerFragment;
@@ -42,12 +24,10 @@ import com.esc.csdn.fragment.MySaveFragment;
 import com.esc.csdn.fragment.SettingFragment;
 import com.esc.csdn.fragment.SoftDevFragment;
 import com.esc.csdn.utils.NetUtil;
-import com.esc.csdn.utils.ScreenShot;
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
-import com.esc.csdn.entity.*;
 
-public class MainFrame extends FragmentActivity implements View.OnClickListener,SensorEventListener,OnTouchListener{
+public class MainFrame extends FragmentActivity implements View.OnClickListener,OnTouchListener{
 
 	private String[] mMenu_name;
 
@@ -61,13 +41,10 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	private ResideMenuItem mMenu_sw_development;
 	private ResideMenuItem mMenu_exit;
 	private ResideMenuItem mMenu_settings;
-	private SensorManager sensorManager = null;
-	private Vibrator vibrator = null;
 	private ACache cache = null;
-	private String isChecked = "";
 	
 	private ImageView mShareBtn=null;
-	
+	private ImageView mOpenMenuBtn=null;
 	private AlertDialog mExitDialog;
 
 	@Override
@@ -84,8 +61,6 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		}else{
 			//Toast.makeText(MainFrame.this, "net is close!", Toast.LENGTH_LONG).show();
 		}
-		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		vibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
 		changeFragment(new CloudFragment());
 	}
 
@@ -123,18 +98,10 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		mResideMenu.addMenuItem(mMenu_save,ResideMenu.DIRECTION_LEFT);
 		mResideMenu.addMenuItem(mMenu_settings,ResideMenu.DIRECTION_LEFT);
 		mResideMenu.addMenuItem(mMenu_exit,ResideMenu.DIRECTION_LEFT);
-
-		ImageView toggleIv = (ImageView) findViewById(R.id.openMenuBtn);
-
-		//open menu
-		toggleIv.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				mResideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
-			}
-		});
-		//set default title
+		mOpenMenuBtn = (ImageView) findViewById(R.id.openMenuBtn);
+		mOpenMenuBtn.setOnClickListener(this);
+		mShareBtn=(ImageView)findViewById(R.id.share_image);
+		mShareBtn.setOnClickListener(this);
 		this.setActionBarTitle(mMenu_name[0]);
 	}
 
@@ -172,6 +139,7 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 
 	@Override
 	public void onClick(View view) {
+		
 		if (view == mMenu_cloud){
 			setActionBarTitle(mMenu_name[0]);
 			changeFragment(new CloudFragment());
@@ -196,17 +164,31 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 			changeFragment(new MySaveFragment());
 		}else if (view == mMenu_exit) {
 			showExitDialog();
-		}else if(view.getId()==R.id.canelBtn){
-			
-			mExitDialog.cancel();
-		}else if(view.getId()==R.id.okBtn){
-			android.os.Process.killProcess(android.os.Process.myPid());
-			System.exit(0);
+		}else{ 
+			switch (view.getId()) {
+			case R.id.canelBtn:
+				mExitDialog.cancel();
+				break;
+			case R.id.okBtn:
+				android.os.Process.killProcess(android.os.Process.myPid());
+				System.exit(0);
+				break;
+			case R.id.openMenuBtn:
+				mResideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
+				break;
+			case R.id.share_image:
+				showShareDialog();
+				break;
+			default:
+				break;
+			}
 		}
-		if(mResideMenu.isOpened())
+		if(mResideMenu.isOpened()&&view.getId()!=R.id.openMenuBtn)
 			mResideMenu.closeMenu();
 	}
-	
+	private void showShareDialog(){
+		
+	}
 	private void showExitDialog() {
 		// TODO Auto-generated method stub
 		mExitDialog=new AlertDialog.Builder(this).create();
@@ -228,48 +210,18 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		sensorManager.unregisterListener(this);
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		sensorManager.registerListener(this,sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),sensorManager.SENSOR_DELAY_NORMAL);
 	}
 
-	@Override
-	public void onAccuracyChanged(Sensor arg0, int arg1) {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	boolean isSavedOne = false;
-	@Override
-	public void onSensorChanged(SensorEvent event) {
-		isChecked = cache.getAsString("checked");
-		if (null != isChecked && isChecked.equals("save")) {//sava image
-			int sensorType = event.sensor.getType();
-			float[]values = event.values;
-			if (sensorType == Sensor.TYPE_ACCELEROMETER) {
-				if (Math.abs(values[0]) > 17 || Math.abs(values[1]) > 17 || Math.abs(values[2]) > 17 ) {
-					vibrator.vibrate(500);
-					if (!isSavedOne) {
-						Bitmap b = ScreenShot.takeScreenShot(MainFrame.this);
-						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日HH时mm分ss秒");
-						File file=new File("/storage/sdcard1/csdn_liuhang");
-						if(!file.exists()){
-							file.mkdirs();
-						}
-						ScreenShot.savePic(b,file.getAbsolutePath()+"/"+simpleDateFormat.format(new Date(System.currentTimeMillis()))+".jpg");
-						Toast.makeText(MainFrame.this,"图片已保存:"+file.getAbsolutePath()+"/"+simpleDateFormat.format(new Date(System.currentTimeMillis()))+".jpg",700).show();
-						isSavedOne = true;
-					}
-
-				}
-			}
-		}
-	}
+	
 	
 	/**
 	 * 监听系统的返回健
