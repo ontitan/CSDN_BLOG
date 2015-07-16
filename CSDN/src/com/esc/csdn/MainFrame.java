@@ -77,13 +77,6 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		setupMenu();
 		setupShareMenu();
 		cache = ACache.get(MainFrame.this);
-		boolean isConn =  NetUtil.checkNet(MainFrame.this);
-		if (isConn) {
-			 //Toast.makeText(MainFrame.this, "net is open!", Toast.LENGTH_LONG).show();
-			 
-		}else{
-			//Toast.makeText(MainFrame.this, "net is close!", Toast.LENGTH_LONG).show();
-		}
 		changeFragment(new CloudFragment());
 	}
 	private void setupShareMenu(){
@@ -280,12 +273,6 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		// TODO Auto-generated method stub
 		super.onResume();
 	}
-
-	
-
-	boolean isSavedOne = false;
-	
-	
 	/**
 	 * 监听系统的返回健
 	 */

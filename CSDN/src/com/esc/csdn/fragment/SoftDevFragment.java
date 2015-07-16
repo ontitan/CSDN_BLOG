@@ -127,7 +127,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNet(getActivity())) {
+			if (NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mSoftDevEntityList.get(position-1).getTitleUrl());
 				intent.putExtra("title",mSoftDevEntityList.get(position-1).getTitle());
@@ -200,7 +200,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
-				if (!NetUtil.checkNet(mActivity)) {
+				if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
 					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
@@ -229,9 +229,8 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		@Override
 		protected Void doInBackground(String... url){
 			cache.put("SOFT",TimeUtils.getCurrentTime());
-			boolean isConnected = NetUtil.checkNet(mActivity);
 
-			if (!isConnected) {
+			if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {
 				mSoftDevEntityList = new MobileDao(mActivity).getSaveSoftDev();
 			}else{ 
 				
@@ -312,7 +311,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 	@Override
 	public void onLoadMore() {
 		
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
 			new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/sd/"+currentPage++});
 		}
 		else{
@@ -324,7 +323,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 	@Override
 	public void onRefresh() {
 		
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
 			if (null == cache.getAsString("SOFTDEV")) {
 				mListView.setRefreshTime("第一次刷新");
 			}else{
@@ -343,7 +342,4 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		// TODO Auto-generated method stub
 		return true;
 	}
-
-
-
 }

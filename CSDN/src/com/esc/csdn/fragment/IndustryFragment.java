@@ -132,7 +132,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNet(getActivity())) {
+			if (NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mIndustryEntity.get(position-1).getTitleUrl());
 				intent.putExtra("title",mIndustryEntity.get(position-1).getTitle());
@@ -209,7 +209,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
-				if (!NetUtil.checkNet(mActivity)) {
+				if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
 					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
@@ -239,9 +239,8 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		@Override
 		protected Void doInBackground(String... url){
 			cache.put("INDUSTRY",TimeUtils.getCurrentTime());
-			boolean isConnected = NetUtil.checkNet(mActivity);
 
-			if (!isConnected) {
+			if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {
 				mIndustryEntity = new MobileDao(mActivity).getSaveIndustry();
 				
 			}else{ 
@@ -323,7 +322,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 	@Override
 	public void onLoadMore() {
 		
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
 			new MyAsyncTask().execute(new String[]{"http://news.csdn.net/news/"+currentPage++});
 		}
 		else{
@@ -335,7 +334,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 
 	@Override
 	public void onRefresh() {
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
 			if (null == cache.getAsString("INDUSTRY")) {
 				mListView.setRefreshTime("第一次刷新");
 			}else{

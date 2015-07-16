@@ -127,7 +127,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNet(getActivity())) {
+			if (NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mCloudEntityList.get(position-1).getTitleUrl());
 				intent.putExtra("title",mCloudEntityList.get(position-1).getTitle());
@@ -203,7 +203,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 			}else{
-				if (!NetUtil.checkNet(mActivity)) {
+				if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
 					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
@@ -236,9 +236,8 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		@Override
 		protected Void doInBackground(String... url){
 			cache.put("lastrefresh",TimeUtils.getCurrentTime());
-			boolean isConnected = NetUtil.checkNet(mActivity);
-
-			if (!isConnected) {
+			
+			if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {
 				mCloudEntityList = new MobileDao(mActivity).getSaveCLoud();
 			}else{ 
 				
@@ -319,7 +318,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	@Override
 	public void onLoadMore() {
 		
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
 			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/cloud/"+currentPage++});
 		}
 		else{
@@ -330,7 +329,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 	@Override
 	public void onRefresh() {
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
 			if (null == cache.getAsString("lastrefresh")) {
 				mListView.setRefreshTime("第一次刷新");
 			}else{
