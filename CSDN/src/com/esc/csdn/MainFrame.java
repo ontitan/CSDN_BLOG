@@ -1,21 +1,35 @@
 package com.esc.csdn;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.netshull.csdn.R;
 
 import android.app.AlertDialog;
-
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+
 import com.esc.csdn.fragment.CloudFragment;
 import com.esc.csdn.fragment.IndustryFragment;
 import com.esc.csdn.fragment.ProgrammerFragment;
@@ -46,13 +60,22 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	private ImageView mShareBtn=null;
 	private ImageView mOpenMenuBtn=null;
 	private AlertDialog mExitDialog;
+	private AlertDialog mShareDialog;
+	private GridView mShareGridView;
+	private View mView;
+
+	private final String[]mShareText={"QQ","QQ空间","微信","微信好友"};
+	private final int[]mShareImg={R.drawable.qq,R.drawable.qzone,R.drawable.wechat,R.drawable.wechat2};
+
+	
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.mainframe);
-		mShareBtn =  (ImageView) findViewById(R.id.action_bar_id).findViewById(R.id.share_image);
 		setupMenu();
+		setupShareMenu();
 		cache = ACache.get(MainFrame.this);
 		boolean isConn =  NetUtil.checkNet(MainFrame.this);
 		if (isConn) {
@@ -63,7 +86,21 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		}
 		changeFragment(new CloudFragment());
 	}
+	private void setupShareMenu(){
+		mView=View.inflate(this, R.layout.share_content, null);
+		mShareDialog=new AlertDialog.Builder(this).create();
+		mShareDialog.setView(mView,0,0,0,0);
+		mShareDialog.setCanceledOnTouchOutside(true);
+		mShareDialog.setInverseBackgroundForced(true);
+		Window mWindow=mShareDialog.getWindow();
+		mWindow.setGravity(Gravity.BOTTOM);
+		mWindow.setWindowAnimations(R.style.window_style);
 
+		mShareGridView=(GridView)mView.findViewById(R.id.content_gridview);
+		mShareGridView.setAdapter(getAdapter(mShareImg, mShareText));
+		mShareBtn=(ImageView)findViewById(R.id.share_image);
+		mShareBtn.setOnClickListener(this);
+	}
 	private void setupMenu(){
 		mResideMenu = new ResideMenu(this);
 		mResideMenu.setBackground(R.drawable.menu_background);
@@ -100,8 +137,7 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		mResideMenu.addMenuItem(mMenu_exit,ResideMenu.DIRECTION_LEFT);
 		mOpenMenuBtn = (ImageView) findViewById(R.id.openMenuBtn);
 		mOpenMenuBtn.setOnClickListener(this);
-		mShareBtn=(ImageView)findViewById(R.id.share_image);
-		mShareBtn.setOnClickListener(this);
+		
 		this.setActionBarTitle(mMenu_name[0]);
 	}
 
@@ -187,8 +223,35 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 			mResideMenu.closeMenu();
 	}
 	private void showShareDialog(){
-		
+		if(null==mShareDialog){
+			mShareDialog=new AlertDialog.Builder(this).setView(mView).show();
+		}else{
+			mShareDialog.show();
+		}
 	}
+	private SimpleAdapter getAdapter(int[] mShareImg, String[] mShareText) {
+		// TODO Auto-generated method stub
+		ArrayList<HashMap<String, Object>>mData=new ArrayList<HashMap<String,Object>>();
+		for(int i=0;i<mShareText.length;i++){
+			HashMap<String, Object>mMap=new HashMap<String, Object>();
+			mMap.put("mShareImg", mShareImg[i]);
+			mMap.put("mShareText", mShareText[i]);
+			mData.add(mMap);
+		}
+		SimpleAdapter mSimpleAdapter=new SimpleAdapter(this, mData, R.layout.share_content_item, new String[]{"mShareImg","mShareText"}, new int[]{R.id.content_share_img,R.id.content_share_text});
+		return mSimpleAdapter;
+	}
+
+
+	private OnItemClickListener mGridViewItemClickListener=new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 	private void showExitDialog() {
 		// TODO Auto-generated method stub
 		mExitDialog=new AlertDialog.Builder(this).create();
@@ -244,9 +307,4 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		// TODO Auto-generated method stub
 		return true;
 	}
-	
-	
-	
-	
-	
 }

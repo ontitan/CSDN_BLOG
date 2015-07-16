@@ -8,7 +8,7 @@ package com.youxiachai.onexlistview;
 
 public final class R {
 	public static final class anim {
-		public static final int listanim = 0x7f040001;
+		public static final int listanim = 0x7f040003;
 	}
 	public static final class attr {
 		public static final int absListViewStyle = 0x7f010000;
@@ -176,21 +176,21 @@ public final class R {
 		public static final int viewEnd = 0x7f060021;
 		public static final int viewStart = 0x7f060020;
 		public static final int visible = 0x7f060001;
-		public static final int xlistview_footer_content = 0x7f060067;
-		public static final int xlistview_footer_hint_textview = 0x7f060069;
-		public static final int xlistview_footer_progressbar = 0x7f060068;
-		public static final int xlistview_header_arrow = 0x7f06006e;
-		public static final int xlistview_header_content = 0x7f06006a;
-		public static final int xlistview_header_hint_textview = 0x7f06006c;
-		public static final int xlistview_header_progressbar = 0x7f06006f;
-		public static final int xlistview_header_text = 0x7f06006b;
-		public static final int xlistview_header_time = 0x7f06006d;
+		public static final int xlistview_footer_content = 0x7f06006a;
+		public static final int xlistview_footer_hint_textview = 0x7f06006c;
+		public static final int xlistview_footer_progressbar = 0x7f06006b;
+		public static final int xlistview_header_arrow = 0x7f060071;
+		public static final int xlistview_header_content = 0x7f06006d;
+		public static final int xlistview_header_hint_textview = 0x7f06006f;
+		public static final int xlistview_header_progressbar = 0x7f060072;
+		public static final int xlistview_header_text = 0x7f06006e;
+		public static final int xlistview_header_time = 0x7f060070;
 		public static final int yes = 0x7f060022;
 	}
 	public static final class layout {
 		public static final int ptr_header = 0x7f03000b;
-		public static final int xlistview_footer = 0x7f030011;
-		public static final int xlistview_header = 0x7f030012;
+		public static final int xlistview_footer = 0x7f030013;
+		public static final int xlistview_header = 0x7f030014;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f080001;

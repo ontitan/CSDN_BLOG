@@ -10,12 +10,14 @@ package org.netshull.csdn;
 public final class R {
     public static final class anim {
         public static final int current_out=0x7f040000;
-        public static final int listanim=0x7f040001;
-        public static final int other_in=0x7f040002;
-        public static final int pro_hide=0x7f040003;
-        public static final int pro_show=0x7f040004;
-        public static final int title_in=0x7f040005;
-        public static final int title_out=0x7f040006;
+        public static final int dialog_enter=0x7f040001;
+        public static final int dialog_exit=0x7f040002;
+        public static final int listanim=0x7f040003;
+        public static final int other_in=0x7f040004;
+        public static final int pro_hide=0x7f040005;
+        public static final int pro_show=0x7f040006;
+        public static final int title_in=0x7f040007;
+        public static final int title_out=0x7f040008;
     }
     public static final class array {
         public static final int about_array=0x7f090001;
@@ -1490,31 +1492,34 @@ containing a value of this type.
         public static final int RelativeLayout1=0x7f060033;
         public static final int TextItem=0x7f060041;
         public static final int action_bar_id=0x7f06003d;
-        public static final int action_settings=0x7f060070;
+        public static final int action_settings=0x7f060073;
         public static final int afterDescendants=0x7f060028;
         public static final int all=0x7f060026;
         public static final int always=0x7f06000e;
         public static final int alwaysScroll=0x7f06002c;
         public static final int animation=0x7f060024;
         public static final int anyRtl=0x7f06001b;
-        public static final int authortextview=0x7f060066;
+        public static final int authortextview=0x7f060069;
         public static final int auto=0x7f06000b;
         public static final int back1=0x7f060031;
         public static final int beforeDescendants=0x7f060027;
         public static final int blocksDescendants=0x7f060029;
-        public static final int canelBtn=0x7f06005e;
+        public static final int canelBtn=0x7f060061;
         public static final int center=0x7f06001f;
+        public static final int content_gridview=0x7f06005c;
+        public static final int content_share_img=0x7f06005d;
+        public static final int content_share_text=0x7f06005e;
         public static final int csdn_child=0x7f060037;
         public static final int defaultPosition=0x7f060011;
         public static final int disabled=0x7f06002a;
-        public static final int dividerLine=0x7f06005d;
+        public static final int dividerLine=0x7f060060;
         public static final int firstStrong=0x7f06001a;
-        public static final int flashtextview=0x7f060065;
-        public static final int go_back=0x7f060060;
+        public static final int flashtextview=0x7f060068;
+        public static final int go_back=0x7f060063;
         public static final int gone=0x7f060003;
         public static final int gravity=0x7f06001c;
         public static final int hardware=0x7f060015;
-        public static final int headLinear=0x7f06005c;
+        public static final int headLinear=0x7f06005f;
         public static final int high=0x7f06000d;
         public static final int horizontal=0x7f060005;
         public static final int ifContentScrolls=0x7f06000f;
@@ -1531,7 +1536,7 @@ containing a value of this type.
         public static final int layout_right_menu=0x7f060059;
         public static final int left=0x7f060012;
         public static final int listTextItem=0x7f060030;
-        public static final int loading=0x7f060061;
+        public static final int loading=0x7f060064;
         public static final int locale=0x7f060019;
         public static final int low=0x7f06000c;
         public static final int ltr=0x7f060016;
@@ -1547,7 +1552,7 @@ containing a value of this type.
         public static final int mobile_read_count=0x7f060045;
         public static final int mobile_setting_id=0x7f06003f;
         public static final int mobile_title=0x7f060042;
-        public static final int mobile_title_id=0x7f060063;
+        public static final int mobile_title_id=0x7f060066;
         public static final int multipleChoice=0x7f06002e;
         public static final int multipleChoiceModal=0x7f06002f;
         public static final int my_save_list=0x7f06004a;
@@ -1557,11 +1562,11 @@ containing a value of this type.
         public static final int no_save_show=0x7f06004b;
         public static final int none=0x7f060004;
         public static final int normal=0x7f06002b;
-        public static final int okBtn=0x7f06005f;
+        public static final int okBtn=0x7f060062;
         public static final int openMenuBtn=0x7f060038;
         public static final int outsideInset=0x7f06000a;
         public static final int outsideOverlay=0x7f060009;
-        public static final int progress=0x7f060064;
+        public static final int progress=0x7f060067;
         public static final int progressfresh=0x7f060049;
         public static final int ptr_id_header=0x7f06004e;
         public static final int ptr_id_image=0x7f06004f;
@@ -1571,7 +1576,7 @@ containing a value of this type.
         public static final int ptr_id_textwrapper=0x7f060051;
         public static final int right=0x7f060013;
         public static final int rtl=0x7f060017;
-        public static final int save=0x7f060062;
+        public static final int save=0x7f060065;
         public static final int save_id=0x7f06004d;
         public static final int scrapped_view=0x7f060000;
         public static final int scrolling=0x7f060025;
@@ -1590,15 +1595,15 @@ containing a value of this type.
         public static final int viewEnd=0x7f060021;
         public static final int viewStart=0x7f060020;
         public static final int visible=0x7f060001;
-        public static final int xlistview_footer_content=0x7f060067;
-        public static final int xlistview_footer_hint_textview=0x7f060069;
-        public static final int xlistview_footer_progressbar=0x7f060068;
-        public static final int xlistview_header_arrow=0x7f06006e;
-        public static final int xlistview_header_content=0x7f06006a;
-        public static final int xlistview_header_hint_textview=0x7f06006c;
-        public static final int xlistview_header_progressbar=0x7f06006f;
-        public static final int xlistview_header_text=0x7f06006b;
-        public static final int xlistview_header_time=0x7f06006d;
+        public static final int xlistview_footer_content=0x7f06006a;
+        public static final int xlistview_footer_hint_textview=0x7f06006c;
+        public static final int xlistview_footer_progressbar=0x7f06006b;
+        public static final int xlistview_header_arrow=0x7f060071;
+        public static final int xlistview_header_content=0x7f06006d;
+        public static final int xlistview_header_hint_textview=0x7f06006f;
+        public static final int xlistview_header_progressbar=0x7f060072;
+        public static final int xlistview_header_text=0x7f06006e;
+        public static final int xlistview_header_time=0x7f060070;
         public static final int yes=0x7f060022;
     }
     public static final class layout {
@@ -1616,11 +1621,13 @@ containing a value of this type.
         public static final int ptr_header=0x7f03000b;
         public static final int residemenu=0x7f03000c;
         public static final int residemenu_item=0x7f03000d;
-        public static final int tips_window=0x7f03000e;
-        public static final int webview_load_content=0x7f03000f;
-        public static final int welcome_guide=0x7f030010;
-        public static final int xlistview_footer=0x7f030011;
-        public static final int xlistview_header=0x7f030012;
+        public static final int share_content=0x7f03000e;
+        public static final int share_content_item=0x7f03000f;
+        public static final int tips_window=0x7f030010;
+        public static final int webview_load_content=0x7f030011;
+        public static final int welcome_guide=0x7f030012;
+        public static final int xlistview_footer=0x7f030013;
+        public static final int xlistview_header=0x7f030014;
     }
     public static final class menu {
         public static final int main=0x7f0b0000;
@@ -1716,6 +1723,7 @@ containing a value of this type.
         public static final int ptr_spinner=0x7f070003;
         public static final int ptr_text=0x7f070005;
         public static final int ptr_textwrapper=0x7f070004;
+        public static final int window_style=0x7f07000a;
     }
     public static final class styleable {
         /** Attributes that can be used with a AbsListView.
