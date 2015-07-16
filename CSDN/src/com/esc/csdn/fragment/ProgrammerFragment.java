@@ -130,7 +130,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()) {
+			if (NetUtil.checkNetState(mActivity)) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mProgrammerEntityList.get(position-1).getTitleUrl());
 				intent.putExtra("title",mProgrammerEntityList.get(position-1).getTitle());
@@ -331,13 +331,16 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 	@Override
 	public void onRefresh() {
 		
-		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
-			if (null == cache.getAsString("PROGRAMMER")) {
-				mListView.setRefreshTime("第一次刷新");
-			}else{
-				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+		if(NetUtil.checkNetState(mActivity)){
+			if(NetUtil.netPingState()){
+				if (null == cache.getAsString("PROGRAMMER")) {
+					mListView.setRefreshTime("第一次刷新");
+				}else{
+					mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+				}
+				new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/"});
 			}
-			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/"});
+			
 		}
 		else{
 			mListView.stopRefresh();

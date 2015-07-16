@@ -54,7 +54,7 @@ public class NetUtil
 	public static boolean ping(String pingAddress){
 		try {
 			//ping -c 3 -w 100  中  ，-c 是指ping的次数 3是指ping 3次 ，-w 100  以秒为单位指定超时间隔，是指超时时间为100秒
-			Process mProcess = Runtime.getRuntime().exec("ping -c 2 -w 5 " + pingAddress);
+			Process mProcess = Runtime.getRuntime().exec("ping -c 1 -w 5 " + pingAddress);
 			int status =mProcess.waitFor();
 			if(0==status)
 			if (status == 0) {

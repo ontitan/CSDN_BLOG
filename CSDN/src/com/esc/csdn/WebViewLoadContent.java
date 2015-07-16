@@ -62,6 +62,7 @@ public class WebViewLoadContent extends Activity implements OnTouchListener{
 
 		dbUtils = DbUtils.create(WebViewLoadContent.this);
 		show = (WebView) findViewById(R.id.mobile_title_id);
+		
 		/*WebSettings mWebSettings=show.getSettings();
 		mWebSettings.setUseWideViewPort(true);
 		mWebSettings.setLoadWithOverviewMode(true);
@@ -84,7 +85,6 @@ public class WebViewLoadContent extends Activity implements OnTouchListener{
 						List<MobileTitleSave>list = dbUtils.findAll(MobileTitleSave.class);
 						if (null != list && list.size() > 0) {
 							for (MobileTitleSave mobileTitleSave : list) {
-								Log.d("test",mobileTitleSave.getTitle());
 								if (mobileTitleSave.getTitle().equals(title)) {
 									dbUtils.delete(mobileTitleSave);
 									break;
@@ -138,23 +138,25 @@ public class WebViewLoadContent extends Activity implements OnTouchListener{
 		String html = "";
 		@Override
 		protected Void doInBackground(String... arg0) {
-			Document childDoc;
+			html=download(url);
+			html = html.replaceFirst("<table width=[\\s\\S]*?</table>","");
+			/*Document childDoc;
 			try {
 				childDoc = Jsoup.connect(url).timeout(10000).get();
 				html = childDoc.getElementsByAttributeValue("class","left").get(0).toString();
-				/*html = html.replaceAll("<div class=\"page_nav\">[\\s\\S]*?<div id=\"comments\" class=\"csdn_comments\"></div> ", "");
+				html = html.replaceAll("<div class=\"page_nav\">[\\s\\S]*?<div id=\"comments\" class=\"csdn_comments\"></div> ", "");
 				html = html.replaceAll("<div class=\"share\">[\\s\\S]*?</div>","");
 				html = html.replaceAll(" <div class=\"digg\">[\\s\\S]*?</div>","");
 				html = html.replaceAll("<div class=\"related\">[\\s\\S]*?</div>","");
 				html = html.replaceAll("<div id=\"con_three_2\"[\\s\\S]*?</div>","");
 				html = html.replaceAll("<div id=\"Tab3\" class=\"relational\"> ","");
-				html = html.replaceFirst("<h2 class=\"tab_1 Menubox\">[\\s\\S]*?</h2>","");*/
+				html = html.replaceFirst("<h2 class=\"tab_1 Menubox\">[\\s\\S]*?</h2>","");
 				html = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html\"; charset=\"utf-8\"/></head><body>" + html;
 				html = html + "</body></html>";
 			} catch (Exception e) {
 				html = download(url);
 				html = html.replaceFirst("<table width=[\\s\\S]*?</table>","");
-				}
+				}*/
 
 			return null;
 		}
@@ -165,10 +167,11 @@ public class WebViewLoadContent extends Activity implements OnTouchListener{
 			show.setWebViewClient(new WebViewClient(){//该设置是为了在点击webview 时候不打开系统浏览器
 				@Override
 				public boolean shouldOverrideUrlLoading(WebView view, String url) {
-					view.loadUrl(url);
+					show.loadDataWithBaseURL(null,url,"text/html","utf-8",null);
 					return true;
 				}
 			});
+			show.getSettings().setDefaultTextEncodingName("UTF-8");
 			show.loadDataWithBaseURL(null,html,"text/html","utf-8",null);
 			myCircleView.setVisibility(View.GONE);
 			loading.setText(mMenu_name[titleIndex]);
@@ -230,7 +233,6 @@ public class WebViewLoadContent extends Activity implements OnTouchListener{
 				e.printStackTrace();  
 			}  
 		}  
-		Log.d("test",sb.toString());
 		return sb.toString();  
 	}
 
@@ -248,7 +250,6 @@ public class WebViewLoadContent extends Activity implements OnTouchListener{
 		default:
 			break;
 		}
-		Log.d("html","touchYStart="+touchYStart+"touchYEnd="+touchYEnd);
 		if ((touchYEnd - touchYStart) < 50.f) {
 			WebViewLoadContent.this.finish();
 			overridePendingTransition(R.anim.title_in, R.anim.title_out);

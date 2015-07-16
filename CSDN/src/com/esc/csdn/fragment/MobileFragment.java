@@ -138,7 +138,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()) {
+			if (NetUtil.checkNetState(mActivity)) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mMobileEntityList.get(position-1).getTitleUrl());
 				intent.putExtra("title",mMobileEntityList.get(position-1).getTitle());
@@ -347,12 +347,15 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 	public void onRefresh() {
 		
 		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
-			if (null == cache.getAsString("MOBILE")) {
-				mListView.setRefreshTime("第一次刷新");
-			}else{
-				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+			if(NetUtil.netPingState()){
+				if (null == cache.getAsString("MOBILE")) {
+					mListView.setRefreshTime("第一次刷新");
+				}else{
+					mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+				}
+				new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/"});
 			}
-			new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/"});
+			
 		}
 		else{
 			mListView.stopRefresh();
