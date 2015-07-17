@@ -2,7 +2,6 @@ package com.esc.csdn.fragment;
 
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +16,7 @@ import org.jsoup.select.Elements;
 import org.netshull.csdn.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,8 +29,11 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,8 +72,10 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 	private View mLayoutView;
 	private View parentView = null;
+	private LinearLayout mHorizLinearLayout=null;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		
 		parentView = inflater.inflate(R.layout.mobile_xlistview_layout, container, false);
 		ResideMenu resideMenu = ((MainFrame)getActivity()).getResideMenu();
 		resideMenu.addIgnoredView(parentView);
@@ -85,7 +90,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	private void init() {
 		cache = ACache.get(mActivity);
 		mLayoutInflater = LayoutInflater.from(mActivity);
-
 		imageLoader.init(ImageLoaderConfiguration.createDefault(mActivity));
 		dbUtils = DbUtils.create(mActivity);
 		
@@ -105,7 +109,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 
 		mListView.setOnItemClickListener(mClickListener);
-		mListView.setOnLongClickListener(mLongClickListener);
+		mListView.setOnItemLongClickListener(mLongClickListener);
 		//mListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
@@ -135,15 +139,17 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			}
 		}
 	};
-	private OnLongClickListener mLongClickListener=new OnLongClickListener() {
-		
+	private OnItemLongClickListener mLongClickListener=new OnItemLongClickListener() {
+
 		@Override
-		public boolean onLongClick(View v) {
+		public boolean onItemLongClick(AdapterView<?> parent, View view,
+				int position, long id) {
 			// TODO Auto-generated method stub
-			Toast.makeText(getActivity(), "long click!", Toast.LENGTH_LONG).show();
-			return false;
+			Toast.makeText(getActivity(),"long click!", Toast.LENGTH_LONG).show();
+			return true;
 		}
 	};
+	
 	private class MobileAdapter extends BaseAdapter {
 		private ImageLoadingListener animateFirstListener=new AnimateFirstDisplayListener();
 		@Override
@@ -196,7 +202,6 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 				}
 
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
-
 			}else{
 				if (!NetUtil.checkNet(mActivity)) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();

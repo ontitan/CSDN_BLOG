@@ -42,8 +42,6 @@ public class SettingFragment extends Fragment{
 	private View mConvertView;
 	private List<String>mList=new ArrayList<String>();
 	
-	private CirclePro circlePro = null;
-	private ToggleButton toggleButton = null;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -61,38 +59,6 @@ public class SettingFragment extends Fragment{
 		}
 		mListView.setAdapter(new ListViewAdapter(mList, getActivity(),R.layout.mobile_setting_item,R.id.TextItem));
 		mListView.setOnItemClickListener(mListener);
-		circlePro =  (CirclePro) parentView.findViewById(R.id.clear_data_pro);
-		toggleButton = (ToggleButton) parentView.findViewById(R.id.toogleButton_id);
-		toggleButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton button, boolean isChecked) {
-				ACache.get(getActivity()).remove("checked");
-				if (isChecked) {
-					ACache.get(getActivity()).put("checked","save");
-				}else {
-					ACache.get(getActivity()).put("checked","notsave");
-				}
-			}
-		});
-		
-		circlePro.setClearData(new ClearData() {
-			
-			@Override
-			public void hide() {
-//				Log.d("str","====================tset==============");
-				Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.pro_hide);
-				circlePro.startAnimation(animation);
-				circlePro.setVisibility(View.GONE);
-				Toast.makeText(getActivity(),"clear data success",1000).show();
-				
-				/**
-				 * 这里写清楚缓存的代码，因为测试阶段比较耗费流量，先不写
-				 */
-			}
-		});
-		
-		
 	}
 	private OnItemClickListener mListener=new OnItemClickListener() {
 
@@ -108,9 +74,8 @@ public class SettingFragment extends Fragment{
 				Toast.makeText(getActivity(), String.valueOf(position), Toast.LENGTH_LONG).show();
 				break;
 			case 2:
-				circlePro.setVisibility(View.VISIBLE);
+				Toast.makeText(getActivity(), String.valueOf(position), Toast.LENGTH_LONG).show();
 				break;
-
 			default:
 				break;
 			}

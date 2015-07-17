@@ -26,9 +26,9 @@
             android:id="@+id/mobile_image"
             android:layout_width="0dp"
             android:layout_height="80dp"
-            android:layout_weight="1"
+            android:layout_weight="1.2"
             android:scaleType="fitCenter"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="3dp"
             android:layout_marginRight="3dp"
             android:layout_marginBottom="2dp"/>
 
@@ -47,15 +47,14 @@
                 android:layout_marginRight="3dp"
                 android:textColor="@android:color/black"
                 android:textSize="15sp" />
-
             <TextView
                 android:id="@+id/mobile_read_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_below="@+id/mobile_content"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginTop="7dp"
                 android:layout_toLeftOf="@+id/mobile_pub_time"
                 android:textColor="@color/red"
                 android:textSize="12sp" >
@@ -67,8 +66,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_below="@+id/mobile_content"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginTop="7dp"
                 android:layout_toLeftOf="@+id/mobile_read_count"
                 android:textColor="@color/red"
                 android:textSize="12sp" >
@@ -82,11 +81,10 @@
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/mobile_content"
                 android:layout_marginRight="3dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="7dp"
                 android:textColor="@color/red"
                 android:textSize="12sp" >
             </TextView>
-        </RelativeLayout>
+		</RelativeLayout>
     </LinearLayout>
-
 </LinearLayout>

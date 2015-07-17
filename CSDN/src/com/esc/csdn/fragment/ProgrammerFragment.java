@@ -28,6 +28,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -110,7 +111,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 
 		mListView.setOnItemClickListener(mClickListener);
 
-		mListView.setOnLongClickListener(mLongClickListener);
+		mListView.setOnItemLongClickListener(mLongClickListener);
 
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
@@ -141,13 +142,14 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 			}
 		}
 	};
-	private OnLongClickListener mLongClickListener=new OnLongClickListener() {
-		
+	private OnItemLongClickListener mLongClickListener=new OnItemLongClickListener() {
+
 		@Override
-		public boolean onLongClick(View v) {
+		public boolean onItemLongClick(AdapterView<?> parent, View view,
+				int position, long id) {
 			// TODO Auto-generated method stub
-			Toast.makeText(getActivity(), "long click!", Toast.LENGTH_LONG).show();
-			return false;
+			Toast.makeText(getActivity(),"long click!", Toast.LENGTH_LONG).show();
+			return true;
 		}
 	};
 

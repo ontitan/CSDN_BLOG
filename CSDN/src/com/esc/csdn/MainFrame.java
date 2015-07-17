@@ -1,37 +1,34 @@
 package com.esc.csdn;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.netshull.csdn.R;
 
 import android.app.AlertDialog;
-import android.app.Service;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
-import android.os.Vibrator;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.esc.csdn.fragment.CloudFragment;
 import com.esc.csdn.fragment.IndustryFragment;
@@ -41,12 +38,10 @@ import com.esc.csdn.fragment.MySaveFragment;
 import com.esc.csdn.fragment.SettingFragment;
 import com.esc.csdn.fragment.SoftDevFragment;
 import com.esc.csdn.utils.NetUtil;
-import com.esc.csdn.utils.ScreenShot;
 import com.special.ResideMenu.ResideMenu;
 import com.special.ResideMenu.ResideMenuItem;
-import com.esc.csdn.entity.*;
 
-public class MainFrame extends FragmentActivity implements View.OnClickListener,SensorEventListener,OnTouchListener{
+public class MainFrame extends FragmentActivity implements View.OnClickListener,OnTouchListener{
 
 	private String[] mMenu_name;
 
@@ -60,20 +55,27 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	private ResideMenuItem mMenu_sw_development;
 	private ResideMenuItem mMenu_exit;
 	private ResideMenuItem mMenu_settings;
-	private SensorManager sensorManager = null;
-	private Vibrator vibrator = null;
 	private ACache cache = null;
-	private String isChecked = "";
 	
-	private int exitInt = 1;
 	private ImageView mShareBtn=null;
+	private ImageView mOpenMenuBtn=null;
+	private AlertDialog mExitDialog;
+	private AlertDialog mShareDialog;
+	private GridView mShareGridView;
+	private View mView;
+
+	private final String[]mShareText={"QQ","QQ空间","微信","微信好友"};
+	private final int[]mShareImg={R.drawable.qq,R.drawable.qzone,R.drawable.wechat,R.drawable.wechat2};
+
+	
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.mainframe);
-		mShareBtn =  (ImageView) findViewById(R.id.action_bar_id).findViewById(R.id.share_image);
 		setupMenu();
+		setupShareMenu();
 		cache = ACache.get(MainFrame.this);
 		boolean isConn =  NetUtil.checkNet(MainFrame.this);
 		if (isConn) {
@@ -82,11 +84,23 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		}else{
 			//Toast.makeText(MainFrame.this, "net is close!", Toast.LENGTH_LONG).show();
 		}
-		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		vibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
 		changeFragment(new CloudFragment());
 	}
+	private void setupShareMenu(){
+		mView=View.inflate(this, R.layout.share_content, null);
+		mShareDialog=new AlertDialog.Builder(this).create();
+		mShareDialog.setView(mView,0,0,0,0);
+		mShareDialog.setCanceledOnTouchOutside(true);
+		mShareDialog.setInverseBackgroundForced(true);
+		Window mWindow=mShareDialog.getWindow();
+		mWindow.setGravity(Gravity.BOTTOM);
+		mWindow.setWindowAnimations(R.style.window_style);
 
+		mShareGridView=(GridView)mView.findViewById(R.id.content_gridview);
+		mShareGridView.setAdapter(getAdapter(mShareImg, mShareText));
+		mShareBtn=(ImageView)findViewById(R.id.share_image);
+		mShareBtn.setOnClickListener(this);
+	}
 	private void setupMenu(){
 		mResideMenu = new ResideMenu(this);
 		mResideMenu.setBackground(R.drawable.menu_background);
@@ -121,18 +135,9 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		mResideMenu.addMenuItem(mMenu_save,ResideMenu.DIRECTION_LEFT);
 		mResideMenu.addMenuItem(mMenu_settings,ResideMenu.DIRECTION_LEFT);
 		mResideMenu.addMenuItem(mMenu_exit,ResideMenu.DIRECTION_LEFT);
-
-		ImageView toggleIv = (ImageView) findViewById(R.id.openMenuBtn);
-
-		//open menu
-		toggleIv.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				mResideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
-			}
-		});
-		//set default title
+		mOpenMenuBtn = (ImageView) findViewById(R.id.openMenuBtn);
+		mOpenMenuBtn.setOnClickListener(this);
+		
 		this.setActionBarTitle(mMenu_name[0]);
 	}
 
@@ -145,12 +150,10 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	private ResideMenu.OnMenuListener mMenuListener = new ResideMenu.OnMenuListener() {
 		@Override
 		public void openMenu() {
-			//            Toast.makeText(MainActivity.this, "Menu is opened!", Toast.LENGTH_SHORT).show();
 		}
 
 		@Override
 		public void closeMenu() {
-			//            Toast.makeText(MainActivity.this, "Menu is closed!", Toast.LENGTH_SHORT).show();
 		}
 	};
 
@@ -172,6 +175,7 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 
 	@Override
 	public void onClick(View view) {
+		
 		if (view == mMenu_cloud){
 			setActionBarTitle(mMenu_name[0]);
 			changeFragment(new CloudFragment());
@@ -195,13 +199,71 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 			setActionBarTitle(mMenu_name[5]);
 			changeFragment(new MySaveFragment());
 		}else if (view == mMenu_exit) {
-		
-        	
+			showExitDialog();
+		}else{ 
+			switch (view.getId()) {
+			case R.id.canelBtn:
+				mExitDialog.cancel();
+				break;
+			case R.id.okBtn:
+				android.os.Process.killProcess(android.os.Process.myPid());
+				System.exit(0);
+				break;
+			case R.id.openMenuBtn:
+				mResideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
+				break;
+			case R.id.share_image:
+				showShareDialog();
+				break;
+			default:
+				break;
+			}
 		}
-
-		mResideMenu.closeMenu();
+		if(mResideMenu.isOpened()&&view.getId()!=R.id.openMenuBtn)
+			mResideMenu.closeMenu();
+	}
+	private void showShareDialog(){
+		if(null==mShareDialog){
+			mShareDialog=new AlertDialog.Builder(this).setView(mView).show();
+		}else{
+			mShareDialog.show();
+		}
+	}
+	private SimpleAdapter getAdapter(int[] mShareImg, String[] mShareText) {
+		// TODO Auto-generated method stub
+		ArrayList<HashMap<String, Object>>mData=new ArrayList<HashMap<String,Object>>();
+		for(int i=0;i<mShareText.length;i++){
+			HashMap<String, Object>mMap=new HashMap<String, Object>();
+			mMap.put("mShareImg", mShareImg[i]);
+			mMap.put("mShareText", mShareText[i]);
+			mData.add(mMap);
+		}
+		SimpleAdapter mSimpleAdapter=new SimpleAdapter(this, mData, R.layout.share_content_item, new String[]{"mShareImg","mShareText"}, new int[]{R.id.content_share_img,R.id.content_share_text});
+		return mSimpleAdapter;
 	}
 
+
+	private OnItemClickListener mGridViewItemClickListener=new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	private void showExitDialog() {
+		// TODO Auto-generated method stub
+		mExitDialog=new AlertDialog.Builder(this).create();
+		mExitDialog.show();
+		Window mWindow=mExitDialog.getWindow();
+		mWindow.setContentView(R.layout.tips_window);
+		TextView canelTextView=(TextView)mWindow.findViewById(R.id.canelBtn);
+		TextView okTextView=(TextView)mWindow.findViewById(R.id.okBtn);
+		canelTextView.setOnClickListener(this);
+		okTextView.setOnClickListener(this);
+		
+	}
 	public ResideMenu getResideMenu(){
 		return mResideMenu;
 		
@@ -211,61 +273,33 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		sensorManager.unregisterListener(this);
 	}
 
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		sensorManager.registerListener(this,sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),sensorManager.SENSOR_DELAY_NORMAL);
 	}
 
-	@Override
-	public void onAccuracyChanged(Sensor arg0, int arg1) {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	boolean isSavedOne = false;
-	@Override
-	public void onSensorChanged(SensorEvent event) {
-		isChecked = cache.getAsString("checked");
-		if (null != isChecked && isChecked.equals("save")) {//sava image
-			int sensorType = event.sensor.getType();
-			float[]values = event.values;
-			if (sensorType == Sensor.TYPE_ACCELEROMETER) {
-				if (Math.abs(values[0]) > 17 || Math.abs(values[1]) > 17 || Math.abs(values[2]) > 17 ) {
-					vibrator.vibrate(500);
-					if (!isSavedOne) {
-						Bitmap b = ScreenShot.takeScreenShot(MainFrame.this);
-						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日HH时mm分ss秒");
-						File file=new File("/storage/sdcard1/csdn_liuhang");
-						if(!file.exists()){
-							file.mkdirs();
-						}
-						ScreenShot.savePic(b,file.getAbsolutePath()+"/"+simpleDateFormat.format(new Date(System.currentTimeMillis()))+".jpg");
-						Toast.makeText(MainFrame.this,"图片已保存:"+file.getAbsolutePath()+"/"+simpleDateFormat.format(new Date(System.currentTimeMillis()))+".jpg",700).show();
-						isSavedOne = true;
-					}
-
-				}
-			}
-		}
-	}
+	
 	
 	/**
 	 * 监听系统的返回健
 	 */
 	public boolean onKeyDown(int keyCode, KeyEvent event) { 
-		if (exitInt == 1 && keyCode == KeyEvent.KEYCODE_BACK) {
-			mResideMenu.openMenu(ResideMenu.DIRECTION_LEFT);
-			exitInt = 2;
-		}else if (keyCode == KeyEvent.KEYCODE_BACK) {
-			mResideMenu.closeMenu();
-			exitInt = 1;
+		if(keyCode==KeyEvent.KEYCODE_BACK){
+			if(mResideMenu.isOpened()){
+				mResideMenu.closeMenu();
+				showExitDialog();
+			}else{
+				showExitDialog();
+			}
+			
 		}
-		return true; 
+		return true;
     }
 
 	@Override
@@ -273,9 +307,4 @@ public class MainFrame extends FragmentActivity implements View.OnClickListener,
 		// TODO Auto-generated method stub
 		return true;
 	}
-	
-	
-	
-	
-	
 }
