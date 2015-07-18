@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
 import com.esc.csdn.MyCircleView;
+import com.esc.csdn.SharedPreferencesTools;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.CloudEntity;
@@ -58,7 +59,7 @@ import com.special.ResideMenu.ResideMenu;
 public class IndustryFragment extends Fragment implements IXListViewRefreshListener,IXListViewLoadMore,OnTouchListener{
 	private XListView mListView = null;
 	private MobileAdapter mobileAdapter = null;
-	private List<IndustryEntity>mIndustryEntity = new ArrayList<IndustryEntity>();
+	private List<IndustryEntity>mIndustryEntityList = new ArrayList<IndustryEntity>();
 	private LayoutInflater mLayoutInflater = null;
 	private ImageLoader imageLoader = ImageLoader.getInstance();
 	private DisplayImageOptions options;
@@ -66,7 +67,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 	private DbUtils dbUtils = null;
 
 
-	private int currentPage = 2;
+	private int mIndustryPage = 2;
 
 	private ACache cache = null;
 	private static final String TAG = "Mobile";
@@ -106,9 +107,8 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		.displayer(new RoundedBitmapDisplayer(20))
 		.build();
 
-		mIndustryEntity = new ArrayList<IndustryEntity>();
+		mIndustryEntityList = new ArrayList<IndustryEntity>();
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
-		mIndustryEntity = new ArrayList<IndustryEntity>();
 		mobileAdapter = new MobileAdapter();
 		mListView.setAdapter(mobileAdapter);
 		mListView.setOnItemClickListener(mClickListener);
@@ -117,11 +117,12 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();
-		mIndustryEntity = new MobileDao(mActivity).getSaveIndustry();
-		if (null == mIndustryEntity || mIndustryEntity.size() == 0) {
-			mIndustryEntity = new ArrayList<IndustryEntity>();
+		mIndustryEntityList = new MobileDao(mActivity).getSaveIndustry();
+		if (null == mIndustryEntityList || mIndustryEntityList.size() == 0) {
+			mIndustryEntityList = new ArrayList<IndustryEntity>();
 			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
 			new MyAsyncTask().execute(new String[]{"http://news.csdn.net/"});
+			SharedPreferencesTools.setParam(mActivity, "mIndustryPage",mIndustryPage);
 		}
 	}
 
@@ -132,10 +133,10 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNetState(mActivity)) {
+			if (NetUtil.checkNet(getActivity())) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
-				intent.putExtra("url",mIndustryEntity.get(position-1).getTitleUrl());
-				intent.putExtra("title",mIndustryEntity.get(position-1).getTitle());
+				intent.putExtra("url",mIndustryEntityList.get(position-1).getTitleUrl());
+				intent.putExtra("title",mIndustryEntityList.get(position-1).getTitle());
 				intent.putExtra("titleIndex",2);
 				mActivity.startActivity(intent);
 				getActivity().overridePendingTransition(R.anim.other_in, R.anim.current_out); 
@@ -160,7 +161,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return null == mIndustryEntity ? 0 :mIndustryEntity.size();
+			return null == mIndustryEntityList ? 0 :mIndustryEntityList.size();
 		}
 
 		@Override
@@ -193,13 +194,13 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 			}else{
 				viewHolder = (ViewHolder) convertView.getTag();
 			}
-			if (null != mIndustryEntity && mIndustryEntity.size() > 0) {
-				viewHolder.mTitle.setText(mIndustryEntity.get(position).getTitle());
-				viewHolder.mContent.setText(mIndustryEntity.get(position).getContent());
-				viewHolder.mPubTime.setText(mIndustryEntity.get(position).getPubTime());
-				viewHolder.mReadCount.setText(mIndustryEntity.get(position).getReadCount());
-				viewHolder.mCommentCount.setText(mIndustryEntity.get(position).getCommentCount());
-				final String image_url = mIndustryEntity.get(position).getPicUrl();
+			if (null != mIndustryEntityList && mIndustryEntityList.size() > 0) {
+				viewHolder.mTitle.setText(mIndustryEntityList.get(position).getTitle());
+				viewHolder.mContent.setText(mIndustryEntityList.get(position).getContent());
+				viewHolder.mPubTime.setText(mIndustryEntityList.get(position).getPubTime());
+				viewHolder.mReadCount.setText(mIndustryEntityList.get(position).getReadCount());
+				viewHolder.mCommentCount.setText(mIndustryEntityList.get(position).getCommentCount());
+				final String image_url = mIndustryEntityList.get(position).getPicUrl();
 				if (null == image_url || image_url.equals("")) {
 					convertView.findViewById(R.id.mobile_image).setVisibility(View.GONE);
 				}else {
@@ -209,10 +210,10 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
-				if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {
+				if (!NetUtil.checkNet(mActivity)) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
+					Toast.makeText(mActivity, "已加载完毕�,Toast.LENGTH_LONG).show();
 				}
 
 			}
@@ -239,20 +240,20 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		@Override
 		protected Void doInBackground(String... url){
 			cache.put("INDUSTRY",TimeUtils.getCurrentTime());
+			boolean isConnected = NetUtil.checkNet(mActivity);
 
-			if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {
-				mIndustryEntity = new MobileDao(mActivity).getSaveIndustry();
-				
+			if (!isConnected) {
+				mIndustryEntityList = new MobileDao(mActivity).getSaveIndustry();
 			}else{ 
-				
-				if(mIndustryEntity==null||mIndustryEntity.size()==0)
-					mIndustryEntity=new ArrayList<IndustryEntity>();
-				
+				String isTag = "";
 				Document doc;
-				MyCircleView circleView = (MyCircleView) LayoutInflater.from(mActivity).inflate(R.layout.mobile_xlistview_layout,null).findViewById(R.id.progressfresh);
-				circleView.setVisibility(View.GONE);
 				try {
+					if(mIndustryEntityList==null)mIndustryEntityList=new ArrayList<IndustryEntity>();
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
+
+					Element leftDiv = doc.getElementsByAttributeValue("id","ddimagetabs").get(0);
+					//		System.out.println(leftDivs);
+
 					String title = "";
 					String titleUrl = "";
 					String pubTime = "";
@@ -262,8 +263,9 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 					String content = "";
 					List<String>tags = new ArrayList<String>();
 					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
+					//						System.out.println(contentDiv);
 					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
-					IndustryEntity industryEntity = null;
+					IndustryEntity cloudEntity = null;
 					for (Element element : contents) {
 						tags.clear();
 						title = element.getElementsByTag("a").get(0).text();
@@ -281,13 +283,13 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 						for (Element element2 : tagElements) {
 							tags.add(element2.text());
 						}
-						industryEntity = new IndustryEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
+						cloudEntity = new IndustryEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
 
 
 						cacheList = new MobileDao(mActivity).getSaveIndustry();
 						if (null != cacheList && cacheList.size() > 0) {
 							for (IndustryEntity entity : cacheList) {
-								if (entity.getTitleUrl().equals(industryEntity.getTitleUrl())) {
+								if (entity.getTitleUrl().equals(cloudEntity.getTitleUrl())) {
 									isExit = true;
 									break;
 								} 
@@ -295,12 +297,26 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 						}
 						if (!isExit) {
 							try {
-								dbUtils.save(industryEntity);
+								try {
+									isTag = url[1];
+								} catch (Exception e) {
+									if (null != isTag && isTag!=""&&"isrefresh".equals(isTag)) {
+										mIndustryEntityList = dbUtils.findAll(IndustryEntity.class);
+										if (null != mIndustryEntityList) {
+											mIndustryEntityList.add(0, cloudEntity);
+											dbUtils.delete(IndustryEntity.class);
+											dbUtils.saveAll(mIndustryEntityList);
+										}
+									}else {
+										dbUtils.save(cloudEntity);
+										mIndustryEntityList.add(cloudEntity);
+									}
+								}
+
 							} catch (DbException e) {
 								e.printStackTrace();
 							}
 						}
-						mIndustryEntity.add(industryEntity);
 					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -322,8 +338,10 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 	@Override
 	public void onLoadMore() {
 		
-		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
-			new MyAsyncTask().execute(new String[]{"http://news.csdn.net/news/"+currentPage++});
+		if(NetUtil.checkNet(getActivity())){
+			mIndustryPage=(Integer) SharedPreferencesTools.getParam(mActivity, "mIndustryPage", (Integer)2);
+			new MyAsyncTask().execute(new String[]{"http://news.csdn.net/news/"+mIndustryPage++});
+			SharedPreferencesTools.setParam(mActivity, "mIndustryPage", mIndustryPage);
 		}
 		else{
 			mListView.stopLoadMore();
@@ -334,15 +352,15 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 
 	@Override
 	public void onRefresh() {
-		if(NetUtil.checkNetState(mActivity)){
-			if(NetUtil.netPingState()){
-				if (null == cache.getAsString("INDUSTRY")) {
-					mListView.setRefreshTime("第一次刷新");
-				}else{
-					mListView.setRefreshTime(cache.getAsString("lastrefresh"));
-				}
-				new MyAsyncTask().execute(new String[]{"http://news.csdn.net/"});
+		if(NetUtil.checkNet(getActivity())){
+			if (null == cache.getAsString("INDUSTRY")) {
+				mListView.setRefreshTime("第一次刷�);
+				new MyAsyncTask().execute(new String[]{"http://news.csdn.net/",""});
+			}else{
+				mListView.setRefreshTime(cache.getAsString("INDUSTRY"));
+				new MyAsyncTask().execute(new String[]{"http://news.csdn.net/","isrefresh"});
 			}
+			
 		}
 		
 		else{

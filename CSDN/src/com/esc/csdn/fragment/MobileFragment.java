@@ -38,11 +38,13 @@ import android.widget.Toast;
 
 import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
+import com.esc.csdn.SharedPreferencesTools;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.MyCircleView;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.IndustryEntity;
 import com.esc.csdn.entity.MobileEntity;
+import com.esc.csdn.entity.ProgrammerEntity;
 import com.esc.csdn.fragment.IndustryFragment.MyAsyncTask;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
@@ -67,7 +69,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 	private DbUtils dbUtils = null;
 
 
-	private int currentPage = 2;
+	private int mMobilePage = 2;
 
 	private ACache cache = null;
 	private static final String TAG = "Mobile";
@@ -128,8 +130,9 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 			mMobileEntityList = new ArrayList<MobileEntity>();
 			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
 			new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/"});
+			SharedPreferencesTools.setParam(mActivity, "mMobilePage", mMobilePage);
 		}
-		//		mListView.startRefresh();
+		
 	}
 
 	private OnItemClickListener mClickListener=new OnItemClickListener() {
@@ -219,7 +222,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 				if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
+					Toast.makeText(mActivity, "已加载完毕�,Toast.LENGTH_LONG).show();
 				}
 
 			}
@@ -251,20 +254,15 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 
 			if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {	
 				mMobileEntityList = new MobileDao(mActivity).getSavedMobile();
-				
 			}else{ 
-				
-				if(mMobileEntityList==null||mMobileEntityList.size()==0)
-					mMobileEntityList=new ArrayList<MobileEntity>();
-				
+				String isTag = "";
 				Document doc;
-				circleView = (MyCircleView) LayoutInflater.from(mActivity).inflate(R.layout.mobile_xlistview_layout,null).findViewById(R.id.progressfresh);
-				circleView.setVisibility(View.GONE);
 				try {
-					
+					if(mMobileEntityList==null)mMobileEntityList=new ArrayList<MobileEntity>();
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
 
 					Element leftDiv = doc.getElementsByAttributeValue("id","ddimagetabs").get(0);
+
 					String title = "";
 					String titleUrl = "";
 					String pubTime = "";
@@ -307,13 +305,26 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 						}
 						if (!isExit) {
 							try {
-								dbUtils.save(mobileEntity);
+								try {
+									isTag = url[1];
+								} catch (Exception e) {
+									if (null != isTag &&""!=isTag && "isrefresh".equals(isTag)) {
+										mMobileEntityList = dbUtils.findAll(MobileEntity.class);
+										if (null != mMobileEntityList) {
+											mMobileEntityList.add(0, mobileEntity);
+											dbUtils.delete(MobileEntity.class);
+											dbUtils.saveAll(mMobileEntityList);
+										}
+									}else {
+										dbUtils.save(mobileEntity);
+										mMobileEntityList.add(mobileEntity);
+									}
+								}
+								
 							} catch (DbException e) {
 								e.printStackTrace();
 							}
 						}
-
-						mMobileEntityList.add(mobileEntity);
 					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -334,7 +345,9 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 	@Override
 	public void onLoadMore() {
 		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
-			new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/mobile/"+currentPage++});
+			mMobilePage=(Integer) SharedPreferencesTools.getParam(mActivity, "mMobilePage", (Integer)2);
+			new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/mobile/"+mMobilePage++});
+			SharedPreferencesTools.setParam(mActivity, "mMobilePage", mMobilePage);
 		}
 		else{
 			mListView.stopLoadMore();
@@ -349,11 +362,13 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
 			if(NetUtil.netPingState()){
 				if (null == cache.getAsString("MOBILE")) {
-					mListView.setRefreshTime("第一次刷新");
+					mListView.setRefreshTime("第一次刷�);
+				new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/",""});
 				}else{
-					mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+				mListView.setRefreshTime(cache.getAsString("MOBILE"));
+				new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/","isrefresh"});
 				}
-				new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/"});
+			
 			}
 			
 		}
