@@ -15,12 +15,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.netshull.csdn.R;
 
+import android.R.bool;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,13 +38,12 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
-import com.esc.csdn.MyCircleView;
+import com.esc.csdn.SharedPreferencesTools;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.CloudEntity;
@@ -65,14 +69,13 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 	private DbUtils dbUtils = null;
 
-	private int currentPage = 2;
+	private int mCloudPage = 2;
 
 	private ACache cache = null;
 	private Activity mActivity;
 
 	private View mLayoutView;
 	private View parentView = null;
-	private LinearLayout mHorizLinearLayout=null;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		
@@ -106,19 +109,19 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		mListView = (XListView) mLayoutView.findViewById(R.id.mobile_listview);
 		mobileAdapter = new MobileAdapter();
 		mListView.setAdapter(mobileAdapter);
-
-
 		mListView.setOnItemClickListener(mClickListener);
 		mListView.setOnItemLongClickListener(mLongClickListener);
 		//mListView.setOnScrollListener(new PauseOnScrollListener(imageLoader, true, true));
 		mListView.setPullRefreshEnable(this);
 		mListView.setPullLoadEnable(this);
 		mListView.NotRefreshAtBegin();
+		
 		mCloudEntityList = new MobileDao(mActivity).getSaveCLoud();
 		if (null == mCloudEntityList || mCloudEntityList.size() == 0) {
 			mCloudEntityList = new ArrayList<CloudEntity>();
 			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
 			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/"});
+			SharedPreferencesTools.setParam(mActivity, "mCloudPage", mCloudPage);
 		}
 	}
 	private OnItemClickListener mClickListener=new OnItemClickListener() {
@@ -127,7 +130,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNet(getActivity())) {
+			if (NetUtil.checkNetState(getActivity())) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mCloudEntityList.get(position-1).getTitleUrl());
 				intent.putExtra("title",mCloudEntityList.get(position-1).getTitle());
@@ -203,7 +206,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 			}else{
-				if (!NetUtil.checkNet(mActivity)) {
+				if (!NetUtil.checkNetState(mActivity)) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
 					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
@@ -235,7 +238,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		
 		@Override
 		protected Void doInBackground(String... url){
-			cache.put("lastrefresh",TimeUtils.getCurrentTime());
+			/*cache.put("lastrefresh",TimeUtils.getCurrentTime());
 			boolean isConnected = NetUtil.checkNet(mActivity);
 
 			if (!isConnected) {
@@ -304,7 +307,89 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 					e1.printStackTrace();
 				}
 			}
+			return null;*/
+			cache.put("lastrefresh",TimeUtils.getCurrentTime());
+			boolean isConnected = NetUtil.checkNetState(mActivity);
+
+			if (!isConnected) {
+				mCloudEntityList = new MobileDao(mActivity).getSaveCLoud();
+			}else{
+				String isTag = "";
+				Document doc;
+				try {
+					
+					if(mCloudEntityList==null)mCloudEntityList=new ArrayList<CloudEntity>();
+					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
+
+					String title = "";
+					String titleUrl = "";
+					String pubTime = "";
+					String readCount = "";
+					String commentCount = "";
+					String picUrl = "";
+					String content = "";
+					List<String>tags = new ArrayList<String>();
+					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
+					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
+					CloudEntity cloudEntity = null;
+					for (Element element : contents) {
+						tags.clear();
+						title = element.getElementsByTag("a").get(0).text();
+						titleUrl = element.getElementsByTag("a").get(0).attr("href");
+						pubTime = element.getElementsByAttributeValue("class","ago").get(0).text();
+						readCount = element.getElementsByAttributeValueContaining("class","view_time").get(0).text();
+						commentCount = element.getElementsByAttributeValueContaining("class","num_recom").get(0).text();
+						try {
+							picUrl = element.getElementsByTag("img").get(0).attr("src");
+						} catch (Exception e) {
+							picUrl = "";
+						}
+						content = element.getElementsByTag("dd").get(0).text();
+						Elements tagElements = element.getElementsByAttributeValue("class","tag").get(0).getElementsByTag("a");
+						for (Element element2 : tagElements) {
+							tags.add(element2.text());
+						}
+						cloudEntity = new CloudEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
+
+
+						cacheList = new MobileDao(mActivity).getSaveCLoud();
+						if (null != cacheList && cacheList.size() > 0) {
+							for (CloudEntity entity : cacheList) {
+								if (entity.getTitleUrl().equals(cloudEntity.getTitleUrl())) {
+									isExit = true;
+									break;
+								} 
+							}
+						}
+						if (!isExit) {
+							try {
+								try {
+									isTag = url[1];
+								} catch (Exception e) {
+									if (null != isTag &&""!=isTag && "isrefresh".equals(isTag)) {
+										mCloudEntityList = dbUtils.findAll(CloudEntity.class);
+										if (null != mCloudEntityList) {
+											mCloudEntityList.add(0, cloudEntity);
+											dbUtils.delete(CloudEntity.class);
+											dbUtils.saveAll(mCloudEntityList);
+										}
+									}else {
+										dbUtils.save(cloudEntity);
+										mCloudEntityList.add(cloudEntity);
+									}
+								}
+								
+							} catch (DbException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
 			return null;
+			
 		}
 
 		@Override
@@ -319,8 +404,10 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	@Override
 	public void onLoadMore() {
 		
-		if(NetUtil.checkNet(getActivity())){
-			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/cloud/"+currentPage++});
+		if(NetUtil.checkNetState(getActivity())){
+			mCloudPage=(Integer) SharedPreferencesTools.getParam(mActivity, "mCloudPage", (Integer)2);
+			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/cloud/"+mCloudPage++});
+			SharedPreferencesTools.setParam(mActivity, "mCloudPage", mCloudPage);
 		}
 		else{
 			mListView.stopLoadMore();
@@ -330,14 +417,16 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 	@Override
 	public void onRefresh() {
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(getActivity())){
 			if (null == cache.getAsString("lastrefresh")) {
-				mListView.setRefreshTime("第一次刷新");
+				mListView.setRefreshTime("第一次刷");
+				parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
+				new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/",""});
 			}else{
 				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+				new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/","isrefresh"});
 			}
 			
-			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/"});
 		}
 		else{
 			mListView.stopRefresh();

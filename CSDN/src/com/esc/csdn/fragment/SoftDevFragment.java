@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
+import com.esc.csdn.SharedPreferencesTools;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.SoftDevEntity;
@@ -61,7 +62,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 	private DbUtils dbUtils = null;
 
 
-	private int currentPage = 2;
+	private int mSoftDevPage = 2;
 
 	private ACache cache = null;
 	private static final String TAG = "Mobile";
@@ -118,6 +119,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 			mSoftDevEntityList = new ArrayList<SoftDevEntity>();
 			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
 			new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/"});
+			SharedPreferencesTools.setParam(mActivity, "mSoftDevPage", mSoftDevPage);
 		}
 	}
 
@@ -127,7 +129,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNet(getActivity())) {
+			if (NetUtil.checkNetState(getActivity())) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mSoftDevEntityList.get(position-1).getTitleUrl());
 				intent.putExtra("title",mSoftDevEntityList.get(position-1).getTitle());
@@ -200,7 +202,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
-				if (!NetUtil.checkNet(mActivity)) {
+				if (!NetUtil.checkNetState(mActivity)) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
 					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
@@ -228,18 +230,17 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 		boolean isExit = false;
 		@Override
 		protected Void doInBackground(String... url){
-			cache.put("SOFT",TimeUtils.getCurrentTime());
-			boolean isConnected = NetUtil.checkNet(mActivity);
+			cache.put("SOFTDEV",TimeUtils.getCurrentTime());
+			boolean isConnected = NetUtil.checkNetState(mActivity);
 
 			if (!isConnected) {
 				mSoftDevEntityList = new MobileDao(mActivity).getSaveSoftDev();
-			}else{ 
-				
-				if(mSoftDevEntityList==null||mSoftDevEntityList.size()==0)
-					mSoftDevEntityList=new ArrayList<SoftDevEntity>();
-				
+			}else{
+				String isTag = "";
 				Document doc;
 				try {
+					
+					if(mSoftDevEntityList==null)mSoftDevEntityList=new ArrayList<SoftDevEntity>();
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
 
 					String title = "";
@@ -251,7 +252,6 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 					String content = "";
 					List<String>tags = new ArrayList<String>();
 					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
-					//						System.out.println(contentDiv);
 					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
 					SoftDevEntity softDevEntity = null;
 					for (Element element : contents) {
@@ -271,7 +271,7 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 						for (Element element2 : tagElements) {
 							tags.add(element2.text());
 						}
-						softDevEntity = new SoftDevEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
+						softDevEntity= new SoftDevEntity(title,titleUrl, pubTime, readCount, commentCount, picUrl, content, tags);
 
 
 						cacheList = new MobileDao(mActivity).getSaveSoftDev();
@@ -285,13 +285,26 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 						}
 						if (!isExit) {
 							try {
-								dbUtils.save(softDevEntity);
+								try {
+									isTag = url[1];
+								} catch (Exception e) {
+									if (null != isTag &&""!=isTag && "isrefresh".equals(isTag)) {
+										mSoftDevEntityList = dbUtils.findAll(SoftDevEntity.class);
+										if (null != mSoftDevEntityList) {
+											mSoftDevEntityList.add(0, softDevEntity);
+											dbUtils.delete(SoftDevEntity.class);
+											dbUtils.saveAll(mSoftDevEntityList);
+										}
+									}else {
+										dbUtils.save(softDevEntity);
+										mSoftDevEntityList.add(softDevEntity);
+									}
+								}
+								
 							} catch (DbException e) {
 								e.printStackTrace();
 							}
 						}
-						mSoftDevEntityList.add(softDevEntity);
-
 					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -312,8 +325,10 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 	@Override
 	public void onLoadMore() {
 		
-		if(NetUtil.checkNet(getActivity())){
-			new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/sd/"+currentPage++});
+		if(NetUtil.checkNetState(getActivity())){
+			mSoftDevPage=(Integer) SharedPreferencesTools.getParam(mActivity, "mSoftDevPage", (Integer)2);
+			new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/sd/"+mSoftDevPage++});
+			SharedPreferencesTools.setParam(mActivity, "mSoftDevPage", mSoftDevPage);
 		}
 		else{
 			mListView.stopLoadMore();
@@ -324,13 +339,15 @@ public class SoftDevFragment extends Fragment implements IXListViewRefreshListen
 	@Override
 	public void onRefresh() {
 		
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(getActivity())){
 			if (null == cache.getAsString("SOFTDEV")) {
 				mListView.setRefreshTime("第一次刷新");
+				new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/",""});
 			}else{
-				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+				mListView.setRefreshTime(cache.getAsString("SOFTDEV"));
+				new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/","isrefresh"});
 			}
-			new MyAsyncTask().execute(new String[]{"http://sd.csdn.net/"});
+			
 		}
 		else{
 			mListView.stopRefresh();

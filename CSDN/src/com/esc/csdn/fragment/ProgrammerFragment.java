@@ -36,10 +36,12 @@ import android.widget.Toast;
 
 import com.esc.csdn.ACache;
 import com.esc.csdn.MainFrame;
+import com.esc.csdn.SharedPreferencesTools;
 import com.esc.csdn.WebViewLoadContent;
 import com.esc.csdn.dao.MobileDao;
 import com.esc.csdn.entity.MobileEntity;
 import com.esc.csdn.entity.ProgrammerEntity;
+import com.esc.csdn.entity.SoftDevEntity;
 import com.esc.csdn.fragment.MobileFragment.MyAsyncTask;
 import com.esc.csdn.utils.NetUtil;
 import com.esc.csdn.utils.TimeUtils;
@@ -64,7 +66,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 
 	private DbUtils dbUtils = null;
 
-	private int currentPage = 2;
+	private int mProgrammerPage = 2;
 
 	private ACache cache = null;
 
@@ -121,6 +123,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 			mProgrammerEntityList = new ArrayList<ProgrammerEntity>();
 			parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
 			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/"});
+			SharedPreferencesTools.setParam(mActivity, "mProgrammerPage", mProgrammerPage);
 		}
 	}
 
@@ -130,7 +133,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNet(getActivity())) {
+			if (NetUtil.checkNetState(getActivity())) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mProgrammerEntityList.get(position-1).getTitleUrl());
 				intent.putExtra("title",mProgrammerEntityList.get(position-1).getTitle());
@@ -207,7 +210,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
-				if (!NetUtil.checkNet(mActivity)) {
+				if (!NetUtil.checkNetState(mActivity)) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
 					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
@@ -236,21 +239,17 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 		boolean isExit = false;
 		@Override
 		protected Void doInBackground(String... url){
-			cache.put("MZGZINE",TimeUtils.getCurrentTime());
-			boolean isConnected = NetUtil.checkNet(mActivity);
+			cache.put("PROGRAMMER",TimeUtils.getCurrentTime());
+			boolean isConnected = NetUtil.checkNetState(mActivity);
 
 			if (!isConnected) {
-				Log.d("test","the net work is "+isConnected);
 				mProgrammerEntityList = new MobileDao(mActivity).getSaveProgrammer();
 			}else{ 
-				
-				if(mProgrammerEntityList==null||mProgrammerEntityList.size()==0)
-					mProgrammerEntityList=new ArrayList<ProgrammerEntity>();
-				
+				String isTag = "";
 				Document doc;
 				try {
+					if(mProgrammerEntityList==null)mProgrammerEntityList=new ArrayList<ProgrammerEntity>();
 					doc = Jsoup.connect(url[0]).userAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.1.4322)").timeout(10000).get();
-
 					String title = "";
 					String titleUrl = "";
 					String pubTime = "";
@@ -260,7 +259,6 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 					String content = "";
 					List<String>tags = new ArrayList<String>();
 					Element contentDiv = doc.getElementsByAttributeValue("class","news").get(0);
-					//						System.out.println(contentDiv);
 					Elements contents = contentDiv.getElementsByAttributeValue("class","unit");
 					ProgrammerEntity programmerEntity = null;
 					for (Element element : contents) {
@@ -294,12 +292,27 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 						}
 						if (!isExit) {
 							try {
-								dbUtils.save(programmerEntity);
+								try {
+									isTag = url[1];
+								} catch (Exception e) {
+									Log.d("html",isTag);
+									if (null != isTag &&""!=isTag&& "isrefresh".equals(isTag)) {
+										mProgrammerEntityList = dbUtils.findAll(ProgrammerEntity.class);
+										if (null != mProgrammerEntityList) {
+											mProgrammerEntityList.add(0, programmerEntity);
+											dbUtils.delete(MobileEntity.class);
+											dbUtils.saveAll(mProgrammerEntityList);
+										}
+									}else {
+										dbUtils.save(programmerEntity);
+										mProgrammerEntityList.add(programmerEntity);
+									}
+								}
+								
 							} catch (DbException e) {
 								e.printStackTrace();
 							}
 						}
-						mProgrammerEntityList.add(programmerEntity);
 					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -320,8 +333,12 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 	@Override
 	public void onLoadMore() {
 		
-		if(NetUtil.checkNet(getActivity())){
-			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/programmer/"+currentPage++});
+		if(NetUtil.checkNetState(getActivity())){
+			mProgrammerPage=(Integer) SharedPreferencesTools.getParam(mActivity, "mProgrammerPage", (Integer)2);
+			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/programmer/"+mProgrammerPage++});
+			SharedPreferencesTools.setParam(mActivity, "mProgrammerPage", mProgrammerPage);
+			
+			
 		}
 		else{
 			mListView.stopLoadMore();
@@ -333,13 +350,15 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 	@Override
 	public void onRefresh() {
 		
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(getActivity())){
 			if (null == cache.getAsString("PROGRAMMER")) {
 				mListView.setRefreshTime("第一次刷新");
+				new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/",""});
 			}else{
-				mListView.setRefreshTime(cache.getAsString("lastrefresh"));
+				mListView.setRefreshTime(cache.getAsString("PROGRAMMER"));
+				new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/","isrefresh"});
 			}
-			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/"});
+			
 		}
 		else{
 			mListView.stopRefresh();
