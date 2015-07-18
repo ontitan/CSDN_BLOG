@@ -133,7 +133,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNet(getActivity())) {
+			if (NetUtil.checkNetState(getActivity())) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mIndustryEntityList.get(position-1).getTitleUrl());
 				intent.putExtra("title",mIndustryEntityList.get(position-1).getTitle());
@@ -210,10 +210,10 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
-				if (!NetUtil.checkNet(mActivity)) {
+				if (!NetUtil.checkNetState(mActivity)) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "已加载完毕�,Toast.LENGTH_LONG).show();
+					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
 				}
 
 			}
@@ -240,7 +240,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 		@Override
 		protected Void doInBackground(String... url){
 			cache.put("INDUSTRY",TimeUtils.getCurrentTime());
-			boolean isConnected = NetUtil.checkNet(mActivity);
+			boolean isConnected = NetUtil.checkNetState(mActivity);
 
 			if (!isConnected) {
 				mIndustryEntityList = new MobileDao(mActivity).getSaveIndustry();
@@ -338,7 +338,7 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 	@Override
 	public void onLoadMore() {
 		
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(getActivity())){
 			mIndustryPage=(Integer) SharedPreferencesTools.getParam(mActivity, "mIndustryPage", (Integer)2);
 			new MyAsyncTask().execute(new String[]{"http://news.csdn.net/news/"+mIndustryPage++});
 			SharedPreferencesTools.setParam(mActivity, "mIndustryPage", mIndustryPage);
@@ -352,9 +352,9 @@ public class IndustryFragment extends Fragment implements IXListViewRefreshListe
 
 	@Override
 	public void onRefresh() {
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(getActivity())){
 			if (null == cache.getAsString("INDUSTRY")) {
-				mListView.setRefreshTime("第一次刷�);
+				mListView.setRefreshTime("第一次刷新");
 				new MyAsyncTask().execute(new String[]{"http://news.csdn.net/",""});
 			}else{
 				mListView.setRefreshTime(cache.getAsString("INDUSTRY"));

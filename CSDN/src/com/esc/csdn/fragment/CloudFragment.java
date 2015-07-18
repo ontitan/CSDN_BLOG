@@ -130,7 +130,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNet(getActivity())) {
+			if (NetUtil.checkNetState(getActivity())) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mCloudEntityList.get(position-1).getTitleUrl());
 				intent.putExtra("title",mCloudEntityList.get(position-1).getTitle());
@@ -206,10 +206,10 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 			}else{
-				if (!NetUtil.checkNet(mActivity)) {
+				if (!NetUtil.checkNetState(mActivity)) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "已加载完毕�,Toast.LENGTH_LONG).show();
+					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
 				}
 
 			}
@@ -309,7 +309,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 			}
 			return null;*/
 			cache.put("lastrefresh",TimeUtils.getCurrentTime());
-			boolean isConnected = NetUtil.checkNet(mActivity);
+			boolean isConnected = NetUtil.checkNetState(mActivity);
 
 			if (!isConnected) {
 				mCloudEntityList = new MobileDao(mActivity).getSaveCLoud();
@@ -404,7 +404,7 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 	@Override
 	public void onLoadMore() {
 		
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(getActivity())){
 			mCloudPage=(Integer) SharedPreferencesTools.getParam(mActivity, "mCloudPage", (Integer)2);
 			new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/cloud/"+mCloudPage++});
 			SharedPreferencesTools.setParam(mActivity, "mCloudPage", mCloudPage);
@@ -417,9 +417,9 @@ public class CloudFragment extends Fragment implements IXListViewRefreshListener
 
 	@Override
 	public void onRefresh() {
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(getActivity())){
 			if (null == cache.getAsString("lastrefresh")) {
-				mListView.setRefreshTime("第一次刷�);
+				mListView.setRefreshTime("第一次刷");
 				parentView.findViewById(R.id.progressfresh).setVisibility(View.VISIBLE);
 				new MyAsyncTask().execute(new String[]{"http://cloud.csdn.net/",""});
 			}else{

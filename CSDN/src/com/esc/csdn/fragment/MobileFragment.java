@@ -219,10 +219,10 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
-				if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {
+				if (!NetUtil.checkNetState(mActivity)) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "已加载完毕�,Toast.LENGTH_LONG).show();
+					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
 				}
 
 			}
@@ -252,7 +252,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 		protected Void doInBackground(String... url){
 			cache.put("MOBILE",TimeUtils.getCurrentTime());
 
-			if (!NetUtil.checkNetState(mActivity)||!NetUtil.netPingState()) {	
+			if (!NetUtil.checkNetState(mActivity)) {	
 				mMobileEntityList = new MobileDao(mActivity).getSavedMobile();
 			}else{ 
 				String isTag = "";
@@ -344,7 +344,7 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 	}
 	@Override
 	public void onLoadMore() {
-		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
+		if(NetUtil.checkNetState(mActivity)){
 			mMobilePage=(Integer) SharedPreferencesTools.getParam(mActivity, "mMobilePage", (Integer)2);
 			new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/mobile/"+mMobilePage++});
 			SharedPreferencesTools.setParam(mActivity, "mMobilePage", mMobilePage);
@@ -359,18 +359,15 @@ public class MobileFragment extends Fragment implements IXListViewRefreshListene
 	@Override
 	public void onRefresh() {
 		
-		if(NetUtil.checkNetState(mActivity)&&NetUtil.netPingState()){
-			if(NetUtil.netPingState()){
-				if (null == cache.getAsString("MOBILE")) {
-					mListView.setRefreshTime("第一次刷�);
-				new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/",""});
-				}else{
-				mListView.setRefreshTime(cache.getAsString("MOBILE"));
-				new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/","isrefresh"});
-				}
+		if(NetUtil.checkNetState(mActivity)){
 			
+			if (null == cache.getAsString("MOBILE")) {
+				mListView.setRefreshTime("第一次刷新");
+			new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/",""});
+			}else{
+			mListView.setRefreshTime(cache.getAsString("MOBILE"));
+			new MyAsyncTask().execute(new String[]{"http://mobile.csdn.net/","isrefresh"});
 			}
-			
 		}
 		else{
 			mListView.stopRefresh();

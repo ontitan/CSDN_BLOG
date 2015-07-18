@@ -133,7 +133,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			// TODO Auto-generated method stub
-			if (NetUtil.checkNet(getActivity())) {
+			if (NetUtil.checkNetState(getActivity())) {
 				Intent intent = new Intent(mActivity,WebViewLoadContent.class);
 				intent.putExtra("url",mProgrammerEntityList.get(position-1).getTitleUrl());
 				intent.putExtra("title",mProgrammerEntityList.get(position-1).getTitle());
@@ -210,10 +210,10 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 				imageLoader.displayImage(image_url, viewHolder.mImage, options, animateFirstListener);
 
 			}else{
-				if (!NetUtil.checkNet(mActivity)) {
+				if (!NetUtil.checkNetState(mActivity)) {
 					Toast.makeText(mActivity,"网络连接异常...",Toast.LENGTH_LONG).show();
 				}else{
-					Toast.makeText(mActivity, "已加载完毕�,Toast.LENGTH_LONG).show();
+					Toast.makeText(mActivity, "已加载完毕。",Toast.LENGTH_LONG).show();
 				}
 
 			}
@@ -240,7 +240,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 		@Override
 		protected Void doInBackground(String... url){
 			cache.put("PROGRAMMER",TimeUtils.getCurrentTime());
-			boolean isConnected = NetUtil.checkNet(mActivity);
+			boolean isConnected = NetUtil.checkNetState(mActivity);
 
 			if (!isConnected) {
 				mProgrammerEntityList = new MobileDao(mActivity).getSaveProgrammer();
@@ -333,7 +333,7 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 	@Override
 	public void onLoadMore() {
 		
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(getActivity())){
 			mProgrammerPage=(Integer) SharedPreferencesTools.getParam(mActivity, "mProgrammerPage", (Integer)2);
 			new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/programmer/"+mProgrammerPage++});
 			SharedPreferencesTools.setParam(mActivity, "mProgrammerPage", mProgrammerPage);
@@ -350,9 +350,9 @@ public class ProgrammerFragment  extends Fragment implements IXListViewRefreshLi
 	@Override
 	public void onRefresh() {
 		
-		if(NetUtil.checkNet(getActivity())){
+		if(NetUtil.checkNetState(getActivity())){
 			if (null == cache.getAsString("PROGRAMMER")) {
-				mListView.setRefreshTime("第一次刷�);
+				mListView.setRefreshTime("第一次刷新");
 				new MyAsyncTask().execute(new String[]{"http://programmer.csdn.net/",""});
 			}else{
 				mListView.setRefreshTime(cache.getAsString("PROGRAMMER"));
